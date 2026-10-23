@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { SearchIcon, SparklesIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { AppLogo } from "@/components/app-logo";
 import { SetupBadge } from "@/components/setup-badge";
 import { apps, categories, resolveApp, searchApps, setupType, type SetupType } from "@/lib/apps";
 import type { GuideStatus } from "@/lib/guides";
@@ -24,7 +25,7 @@ const GUIDE_LABEL: Record<GuideStatus, string> = {
   partial: "Partial guide",
 };
 
-export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> }) {
+export function Catalog({ statuses, summary, below }: { statuses: Record<string, GuideStatus>; summary?: React.ReactNode; below?: React.ReactNode }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [setup, setSetup] = useState<SetupFilter>("all");
@@ -58,7 +59,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
   return (
     <div className="space-y-8">
       <form action="/generate" method="get" onSubmit={onSubmit} role="search">
-        <label htmlFor="app-search" className="mb-2 block text-sm font-medium">
+        <label htmlFor="app-search" className="mb-2 block text-[15px] font-medium">
           Which app are you connecting?
         </label>
         <div className="relative">
@@ -71,10 +72,13 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
             placeholder="Name or website, like Gmail or pipedrive.com"
             autoComplete="off"
             autoFocus
-            className="h-12 pl-11 text-base"
+            className="h-14 rounded-xl bg-card pl-11 text-[17px] shadow-xs"
           />
         </div>
+        {summary && <p className="mt-2 text-sm text-muted-foreground">{summary}</p>}
       </form>
+
+      {below}
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
         <fieldset className="flex flex-wrap items-center gap-1" aria-label="Setup type">
@@ -109,7 +113,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
       {query.trim() && !exact && (
         <a
           href={generateHref}
-          className="flex items-start gap-3 rounded-lg border border-dashed border-primary/40 bg-own-soft p-4 transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-ring"
+          className="flex items-start gap-3 rounded-xl border border-dashed border-primary/40 bg-own-soft p-4 transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-ring"
         >
           <SparklesIcon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
           <span>
@@ -130,16 +134,18 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
             <h2 id={`cat-${cat}`} className="mb-2 flex items-baseline gap-2 text-sm font-semibold">
               {cat} <span className="font-normal text-muted-foreground tabular-nums">{list.length}</span>
             </h2>
-            <ul className="divide-y rounded-lg border bg-card">
+            <ul className="divide-y rounded-xl border bg-card">
               {list.map((a) => (
                 <li key={a.slug}>
                   <Link
                     href={`/plan/${a.slug}`}
-                    className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-muted/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:grid-cols-[1fr_11rem_12rem]"
+                    className="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-3 transition-colors hover:bg-muted/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:grid-cols-[auto_1fr_11rem_11rem]"
                   >
+                    <AppLogo slug={a.slug} name={a.name} size="sm" />
                     <span className="font-medium">{a.name}</span>
                     <SetupBadge type={setupType(a)} />
-                    <span className="col-span-2 text-sm text-muted-foreground sm:col-span-1 sm:text-right">
+                    <span className="col-span-3 col-start-2 flex items-center gap-1.5 text-sm text-muted-foreground sm:col-span-1 sm:col-start-auto sm:justify-end">
+                      <span aria-hidden className={`size-2 rounded-full ${statuses[a.slug] ? "bg-done" : "bg-muted-foreground/40"}`} />
                       {statuses[a.slug] ? GUIDE_LABEL[statuses[a.slug]] : "Generated when opened"}
                     </span>
                   </Link>

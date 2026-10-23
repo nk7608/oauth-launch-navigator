@@ -52,3 +52,17 @@ export function stepToMarkdown(step: PlanView["steps"][number]): string {
   if (step.blocker) parts.push(`If you see "${step.blocker.symptom}": ${step.blocker.cause}. Fix: ${step.blocker.fix}.`);
   return parts.join("\n\n");
 }
+
+/** The plan as instructions for a coding agent: do "Agent can do" steps, stop at the first "You do" step. */
+export function planForAgent(plan: Plan, view: PlanView, url?: string): string {
+  const header = [
+    `You are helping set up ${plan.app.name} OAuth for an AI agent that connects through Composio.`,
+    'Work through the steps in order. Do steps tagged "(Agent can do)" yourself.',
+    'At the first step tagged "(You do)", stop and ask me to do it: never sign in, accept terms, pay, or submit a review on my behalf.',
+    "Treat facts marked Unknown as unknown; don't fill gaps with guesses.",
+    "",
+    "---",
+    "",
+  ];
+  return header.join("\n") + planToMarkdown(plan, view, url);
+}

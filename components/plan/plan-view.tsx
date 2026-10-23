@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useSyncExternalStore } from "react";
-import { AlertTriangleIcon, ArrowLeftIcon, BotIcon, ChevronRightIcon, ExternalLinkIcon, FileTextIcon, UserIcon } from "lucide-react";
+import { AlertTriangleIcon, ArrowLeftIcon, BotIcon, CheckIcon, ChevronRightIcon, ExternalLinkIcon, FileTextIcon, UserIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { OAuthSetupDiagram } from "@/components/connection-diagram";
+import { AppLogo } from "@/components/app-logo";
+import { AudienceIcon, OneAppManyUsers, ScenarioExit } from "@/components/illustrations";
 import { SetupBadge } from "@/components/setup-badge";
+import { CodeBlock } from "@/components/plan/code-block";
 import { CopyButton } from "@/components/plan/copy-button";
 import { EvidenceChip, EvidenceList } from "@/components/plan/evidence";
+import { CopyCode, RichText } from "@/components/plan/rich-text";
 import { setupType } from "@/lib/apps";
-import { planToMarkdown, stepToMarkdown } from "@/lib/markdown";
+import { planForAgent, planToMarkdown, stepToMarkdown } from "@/lib/markdown";
 import type { Plan } from "@/lib/plan-schema";
 import {
   AUDIENCE_OPTIONS,
@@ -22,6 +25,7 @@ import {
   parseInputs,
   viewPlan,
   type Inputs,
+  type PlanScope,
   type PlanView as View,
   type Scenario,
 } from "@/lib/rules";
@@ -45,6 +49,15 @@ const STATUS_TEXT: Record<Plan["meta"]["status"], string> = {
   partial: "Partly researched: some parts couldn't be verified",
 };
 
+const TIER_TONE: Record<PlanScope["tier"], string> = {
+  basic: "bg-muted text-foreground",
+  none: "bg-muted text-foreground",
+  unknown: "bg-muted text-muted-foreground",
+  sensitive: "bg-wait-soft text-wait",
+  provider_review: "bg-wait-soft text-wait",
+  restricted: "bg-blocker-soft text-blocker",
+};
+
 /** Interactive plan: reads ?does=&users= from the URL so shared links reopen the same state. */
 export function PlanViewLive({ plan }: { plan: Plan }) {
   const params = useSearchParams();
@@ -65,20 +78,31 @@ export function PlanViewStatic({ plan }: { plan: Plan }) {
 
 function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; onChange?: (i: Inputs) => void }) {
   const view = useMemo(() => viewPlan(plan, inputs), [plan, inputs]);
+  // Toggle hint: does choosing "Customers" put this plan into a review path?
+  const customersReview = useMemo(() => {
+    const s = viewPlan(plan, { ...inputs, users: "customers" }).scenario;
+    return s === "D_review_required" || s === "E_gated_access";
+  }, [plan, inputs]);
   const done = useDoneSteps(plan.app.slug);
+  const current = view.steps.find((s) => !done.has(s.id))?.id;
   const shareUrl = () => window.location.href;
+  const exit =
+    view.scenario === "F_not_oauth" ? "not_oauth" : view.scenario === "G_not_in_composio" ? "not_in_composio" : view.scenario === "H_insufficient_info" ? "insufficient" : undefined;
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:py-10">
+    <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10 lg:py-10">
       <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
         <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeftIcon className="size-4" aria-hidden /> All apps
         </Link>
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">{plan.app.name}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            {plan.meta.fallback && !plan.meta.fallback.composioChecked ? <span>Composio support unknown</span> : plan.composio.toolkitExists ? <SetupBadge type={setupType(plan.composio)} /> : <span>Not in Composio</span>}
-            {plan.app.category && <span>{plan.app.category}</span>}
+        <div className="flex items-center gap-3">
+          <AppLogo slug={plan.composio.toolkitSlug ?? plan.app.slug} name={plan.app.name} />
+          <div>
+            <h1 className="text-[30px] leading-tight font-semibold tracking-tight">{plan.app.name}</h1>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              {plan.meta.fallback && !plan.meta.fallback.composioChecked ? <span>Composio support unknown</span> : plan.composio.toolkitExists ? <SetupBadge type={setupType(plan.composio)} /> : <span>Not in Composio</span>}
+              {plan.app.category && <span>{plan.app.category}</span>}
+            </div>
           </div>
         </div>
 
@@ -93,16 +117,19 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
           options={AUDIENCE_OPTIONS}
           value={inputs.users}
           onChange={onChange && ((users) => onChange({ ...inputs, users }))}
+          icon={(v) => <AudienceIcon kind={v} />}
+          badge={(v) => (v === "customers" && customersReview ? "review needed" : undefined)}
         />
 
         <div className="space-y-1 border-t pt-4">
-          <CopyButton value={shareUrl} label="Copy share link" done="Link copied" className="-ml-2" />
           <CopyButton
-            value={() => planToMarkdown(plan, view, window.location.href)}
-            label="Copy as Markdown"
-            done="Plan copied as Markdown"
-            className="-ml-2"
+            value={() => planForAgent(plan, view, window.location.href)}
+            label="Copy for your AI agent"
+            done="Plan copied for your agent"
+            className="-ml-2 font-medium text-primary"
           />
+          <CopyButton value={shareUrl} label="Copy share link" done="Link copied" className="-ml-2" />
+          <CopyButton value={() => planToMarkdown(plan, view, window.location.href)} label="Copy as Markdown" done="Plan copied as Markdown" className="-ml-2" />
           <a
             href={`/api/plan/${plan.app.slug}.json?does=${inputs.does}&users=${inputs.users}`}
             className="-ml-2 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -113,27 +140,18 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
         </div>
       </aside>
 
-      <article className="min-w-0 space-y-10">
-        {plan.meta.fallback && (
-          <section className="rounded-lg border border-wait/40 bg-wait-soft p-4 text-sm" aria-label="Starter plan">
-            <h2 className="font-semibold">Starter plan · full research incomplete</h2>
-            <p className="mt-2">{plan.meta.fallback.reason}</p>
-            <p className="mt-2 text-muted-foreground">Only available facts and source links are included. Scopes and approval requirements remain unknown.</p>
-            {plan.evidence[0]?.url && <a href={plan.evidence[0].url} target="_blank" rel="noreferrer" className="mt-3 mr-5 inline-block text-primary underline">Open available source ↗</a>}
-            <a href={`/generate?q=${encodeURIComponent(plan.app.website ?? plan.app.name)}&retry=1`} className="mt-3 inline-block text-primary underline">Retry full research later</a>
-          </section>
-        )}
+      <article className="min-w-0 space-y-8">
+        {plan.meta.fallback && <StarterNotice plan={plan} />}
+
         <header className="space-y-5">
-          <span className={cn("inline-flex rounded-full px-2.5 py-1 text-sm font-medium", SCENARIO_TONE[view.scenario])}>
-            {SCENARIO_LABEL[view.scenario]}
-          </span>
-          <p className="max-w-[62ch] text-xl leading-snug font-medium text-balance sm:text-2xl">{view.verdict}</p>
+          <span className={cn("inline-flex rounded-full px-2.5 py-1 text-sm font-medium", SCENARIO_TONE[view.scenario])}>{SCENARIO_LABEL[view.scenario]}</span>
+          <p className="max-w-[60ch] text-[22px] leading-snug font-medium text-balance">{view.verdict}</p>
           <ul className="space-y-0.5 text-sm text-muted-foreground">
             {view.assumptions.map((a) => (
               <li key={a}>{a}</li>
             ))}
           </ul>
-          <dl className="grid gap-4 border-y py-4 sm:grid-cols-3">
+          <dl className="grid gap-4 rounded-xl border bg-card p-4 sm:grid-cols-3">
             <Fact term="Setup effort">{view.effort}</Fact>
             <Fact term="Wait">
               {view.wait.none ?? (
@@ -153,55 +171,61 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
           </dl>
         </header>
 
+        {exit && <ScenarioExit kind={exit} />}
+
         {view.scenario === "H_insufficient_info" ? (
-          <section aria-labelledby="checked" className="rounded-lg border p-5">
-            <h2 id="checked" className="font-semibold">
-              What we checked
-            </h2>
+          <section aria-labelledby="checked" className="rounded-xl border bg-card p-5">
+            <h2 id="checked" className="font-semibold">What we checked</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px]">
               {view.unknowns.map((u) => (
                 <li key={u}>{u}</li>
               ))}
             </ul>
-            {!plan.composio.toolkitExists && <p className="mt-3 text-sm text-muted-foreground">
-              If this app is real and Composio doesn&apos;t support it yet, you can{" "}
-              <a href={REQUEST_BOARD_URL} target="_blank" rel="noreferrer" className="text-primary underline">
-                request it from Composio
-              </a>
-              .
-            </p>}
+            {!plan.composio.toolkitExists && (
+              <p className="mt-3 text-sm text-muted-foreground">
+                If this app is real and Composio doesn&apos;t support it yet, you can{" "}
+                <a href={REQUEST_BOARD_URL} target="_blank" rel="noreferrer" className="text-primary underline">request it from Composio</a>.
+              </p>
+            )}
           </section>
         ) : (
-          <PhasePath view={view} />
+          <ApprovalStrip plan={plan} view={view} isDone={done.has} />
         )}
 
-        <section aria-labelledby="next-action" className="rounded-lg border-l-4 border-primary bg-own-soft px-5 py-4">
-          <h2 id="next-action" className="text-sm font-semibold text-primary">
-            Next action
-          </h2>
-          <p className="mt-1 text-lg">{view.nextAction}</p>
-        </section>
+        {view.steps.length > 0 && (
+          <section aria-labelledby="next-action" className="rounded-xl border-l-4 border-primary bg-own-soft px-5 py-4">
+            <h2 id="next-action" className="text-sm font-semibold text-primary">Next action</h2>
+            <p className="mt-1 text-lg">{view.nextAction}</p>
+          </section>
+        )}
 
         <section aria-labelledby="steps" className="space-y-8">
-          <h2 id="steps" className="sr-only">
-            Steps
-          </h2>
+          <h2 id="steps" className="sr-only">Steps</h2>
           {view.steps.length === 0 && view.scenario !== "H_insufficient_info" && <p className="text-muted-foreground">No steps apply to this setup.</p>}
           {PHASES.map((phase) => {
             const steps = view.steps.filter((s) => s.phase === phase.id);
             if (!steps.length) return null;
             return (
-              <div key={phase.id} id={`phase-${phase.id}`}>
+              <div key={phase.id} id={`phase-${phase.id}`} className="scroll-mt-6">
                 <h3 className="mb-3 text-sm font-semibold text-muted-foreground">{phase.label}</h3>
-                {phase.id === "connect_composio" && !plan.meta.fallback && plan.composio.toolkitExists && view.scenario !== "A_ready_to_use" && plan.composio.authSchemes.some((scheme) => scheme === "OAUTH2" || scheme === "OAUTH1") && (
-                  <details className="mb-4 rounded-lg border p-4 text-sm">
-                    <summary className="cursor-pointer font-medium">What these connection steps would set up</summary>
-                    <div className="mt-3"><OAuthSetupDiagram /></div>
-                  </details>
-                )}
-                <ol className="space-y-3">
-                  {steps.map((s) => (
-                    <StepRow key={s.id} step={s} view={view} done={done.has(s.id)} onToggle={() => done.toggle(s.id)} />
+                {phase.id === "connect_composio" &&
+                  !plan.meta.fallback &&
+                  plan.composio.toolkitExists &&
+                  view.scenario !== "A_ready_to_use" &&
+                  plan.composio.authSchemes.some((scheme) => scheme === "OAUTH2" || scheme === "OAUTH1") && (
+                    <Collapsible className="mb-4 rounded-xl border bg-card">
+                      <CollapsibleTrigger className="group flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring">
+                        <ChevronRightIcon className="size-4 transition-transform group-data-[panel-open]:rotate-90 motion-reduce:transition-none" aria-hidden />
+                        How it fits: one OAuth app, many users
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="border-t p-3">
+                        <OneAppManyUsers />
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                <ol className="relative">
+                  {steps.map((s, i) => (
+                    <StepRow key={s.id} step={s} view={view} done={done.has(s.id)} current={s.id === current} last={i === steps.length - 1} onToggle={() => done.toggle(s.id)} />
                   ))}
                 </ol>
               </div>
@@ -226,8 +250,8 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
                     {view.scopes.map((s) => (
                       <tr key={s.scope} className="border-b align-top last:border-0">
                         <td className="py-3 pr-4">
-                          <code className="font-mono text-xs break-all">{s.scope}</code>
-                          <span className="mt-1 block text-xs text-muted-foreground capitalize">{s.tier.replace("_", " ")}</span>
+                          <CopyCode value={s.scope} />
+                          <span className={cn("mt-1.5 block w-fit rounded-full px-2 py-0.5 text-xs font-medium capitalize", TIER_TONE[s.tier])}>{s.tier.replace("_", " ")}</span>
                         </td>
                         <td className="py-3 pr-4">{s.allows}</td>
                         <td className="py-3 pr-4">{s.triggers}</td>
@@ -265,34 +289,139 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
   );
 }
 
+function StarterNotice({ plan }: { plan: Plan }) {
+  const prompt = `Research the OAuth launch plan for "${plan.app.website ?? plan.app.name}" for an AI agent that connects through Composio. Follow the oauth-guide-research skill from https://github.com/nk7608/oauth-launch-navigator/blob/main/.claude/skills/oauth-guide-research/SKILL.md and return JSON matching lib/plan-schema.ts. Cite only official provider or Composio docs; mark anything unsupported as Unknown.`;
+  return (
+    <section className="rounded-xl border border-waiting/50 bg-wait-soft p-4 text-sm" aria-label="Starter plan">
+      <h2 className="font-semibold">Starter plan: full research incomplete</h2>
+      <p className="mt-2">{plan.meta.fallback!.reason}</p>
+      <p className="mt-2 text-muted-foreground">Only available facts and source links are included. Scopes and approval requirements remain unknown.</p>
+      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+        {plan.evidence[0]?.url && (
+          <a href={plan.evidence[0].url} target="_blank" rel="noreferrer" className="text-primary underline">
+            Open available source ↗
+          </a>
+        )}
+        <a href={`/generate?q=${encodeURIComponent(plan.app.website ?? plan.app.name)}&retry=1`} className="text-primary underline">
+          Retry full research later
+        </a>
+        <CopyButton value={prompt} label="Research it with your own AI agent" done="Research prompt copied" className="-ml-2 text-primary" />
+      </div>
+    </section>
+  );
+}
+
+type StampState = "todo" | "waiting" | "done" | "skip";
+
+/** The approval path for this plan (#3): Registered → Provider review → Customer admin → Live, from plan data. */
+function ApprovalStrip({ plan, view, isDone }: { plan: Plan; view: View; isDone: (id: string) => boolean }) {
+  const phaseDone = (phase: string) => {
+    const s = view.steps.filter((x) => x.phase === phase);
+    return s.length > 0 && s.every((x) => isDone(x.id));
+  };
+  const ownApp = !["A_ready_to_use", "F_not_oauth"].includes(view.scenario);
+  const review = !view.wait.none;
+  const admin = view.inputs.users === "customers" && view.gatekeepers.some((g) => /admin|owner/i.test(g));
+  const allDone = view.steps.length > 0 && view.steps.every((s) => isDone(s.id));
+  const stamps: { label: string; note: string; state: StampState; href?: string }[] = [
+    {
+      label: "Register your app",
+      note: ownApp ? "your OAuth app" : view.scenario === "F_not_oauth" ? "API key instead" : "use Composio's app",
+      state: !ownApp ? "skip" : phaseDone("register") ? "done" : "todo",
+      href: "#phase-register",
+    },
+    {
+      label: "Provider review",
+      note: review ? shortWait(view.wait.official) : "not needed",
+      state: !review ? "skip" : phaseDone("get_approved") ? "done" : "waiting",
+      href: "#phase-get_approved",
+    },
+    { label: "Customer admin", note: admin ? "may need to approve" : "not needed", state: admin ? "waiting" : "skip" },
+    { label: "Live", note: allDone ? "all steps done" : `${view.steps.length} steps`, state: allDone ? "done" : "todo", href: "#steps" },
+  ];
+  if (plan.meta.fallback) return null;
+  const tone: Record<StampState, string> = {
+    todo: "border-primary/40 bg-card text-foreground",
+    waiting: "border-waiting bg-wait-soft text-wait",
+    done: "border-done bg-ok-soft text-ok",
+    skip: "border-dashed border-border bg-transparent text-muted-foreground",
+  };
+  return (
+    <nav aria-label="Approval path">
+      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {stamps.map((s, i) => {
+          const body = (
+            <>
+              <span className="flex items-center gap-1.5 text-sm font-semibold">
+                <span
+                  className={cn(
+                    "flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] tabular-nums",
+                    s.state === "done" ? "border-done bg-done text-white" : "border-current",
+                  )}
+                  aria-hidden
+                >
+                  {s.state === "done" ? <CheckIcon className="size-3" /> : i + 1}
+                </span>
+                {s.label}
+              </span>
+              <span className="mt-1 block text-xs">{s.note}</span>
+              <span className="sr-only">{{ todo: "to do", waiting: "needs someone's approval", done: "done", skip: "not needed" }[s.state]}</span>
+            </>
+          );
+          return (
+            <li key={s.label}>
+              {s.href && s.state !== "skip" ? (
+                <a href={s.href} className={cn("block h-full rounded-xl border-2 px-3 py-2.5 transition-colors hover:brightness-[0.98]", tone[s.state])}>
+                  {body}
+                </a>
+              ) : (
+                <div className={cn("h-full rounded-xl border-2 px-3 py-2.5", tone[s.state])}>{body}</div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
 function Choice<T extends string>({
   legend,
   options,
   value,
   onChange,
+  icon,
+  badge,
 }: {
   legend: string;
   options: { value: T; label: string; hint: string }[];
   value: T;
   onChange?: (v: T) => void;
+  icon?: (v: T) => React.ReactNode;
+  badge?: (v: T) => string | undefined;
 }) {
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">{legend}</legend>
-      <div className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
-        {options.map((o) => (
-          <button
-            key={o.value}
-            type="button"
-            aria-pressed={value === o.value}
-            disabled={!onChange}
-            onClick={() => onChange?.(o.value)}
-            className="rounded-md px-1 py-1.5 text-sm leading-tight transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-background aria-pressed:font-medium aria-pressed:shadow-xs aria-[pressed=false]:text-muted-foreground"
-          >
-            {o.label}
-            <span className="block text-[11px] font-normal text-muted-foreground">{o.hint}</span>
-          </button>
-        ))}
+      <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
+        {options.map((o) => {
+          const b = badge?.(o.value);
+          return (
+            <button
+              key={o.value}
+              type="button"
+              aria-pressed={value === o.value}
+              disabled={!onChange}
+              onClick={() => onChange?.(o.value)}
+              className="flex flex-col items-center rounded-lg px-1 py-1.5 text-sm leading-tight transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-card aria-pressed:font-medium aria-pressed:shadow-xs aria-[pressed=false]:text-muted-foreground motion-reduce:transition-none"
+            >
+              {icon?.(o.value)}
+              {o.label}
+              <span className="block text-[11px] font-normal text-muted-foreground">{o.hint}</span>
+              {b && <span className="mt-1 rounded-full bg-wait-soft px-1.5 text-[10px] font-medium whitespace-nowrap text-wait">{b}</span>}
+            </button>
+          );
+        })}
       </div>
     </fieldset>
   );
@@ -307,106 +436,106 @@ function Fact({ term, children }: { term: string; children: React.ReactNode }) {
   );
 }
 
-/** The route from prepare to launch; the approval leg carries the wait so it's visible at a glance. */
-function PhasePath({ view }: { view: View }) {
-  const review = !view.wait.none;
-  return (
-    <nav aria-label="Plan phases">
-      <ol className="grid grid-cols-5 gap-1.5">
-        {view.phases.map((p, i) => {
-          const isApproval = p.id === "get_approved";
-          const empty = p.count === 0;
-          return (
-            <li key={p.id} className="min-w-0">
-              <a
-                href={empty ? undefined : `#phase-${p.id}`}
-                aria-disabled={empty}
-                className={cn(
-                  "block h-full rounded-md border-t-4 px-2 pt-2 pb-1 text-sm transition-colors",
-                  empty ? "border-border text-muted-foreground/70" : "border-primary hover:bg-muted",
-                  isApproval && review && "border-wait bg-wait-soft hover:bg-wait-soft/70",
-                )}
-              >
-                <span className="block text-xs text-muted-foreground tabular-nums">{i + 1}</span>
-                <span className="block truncate font-medium sm:whitespace-normal">{p.label}</span>
-                <span className="block text-xs text-muted-foreground">
-                  {empty ? (isApproval ? "Not needed" : "Nothing to do") : `${p.count} step${p.count > 1 ? "s" : ""}`}
-                </span>
-                {isApproval && review && <span className="mt-1 hidden text-xs text-wait sm:block">Wait: {shortWait(view.wait.official)}</span>}
-              </a>
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
-  );
-}
-
 function shortWait(s?: string) {
   if (!s) return "Unknown";
-  return s.length > 60 ? s.slice(0, 57).trimEnd() + "…" : s;
+  return s.length > 48 ? s.slice(0, 45).trimEnd() + "…" : s;
 }
 
-function StepRow({ step, view, done, onToggle }: { step: View["steps"][number]; view: View; done: boolean; onToggle: () => void }) {
-  const owner = step.owner === "agent" ? { Icon: BotIcon, label: "Agent can do", tone: "text-ev-tested" } : { Icon: UserIcon, label: "You do", tone: "text-foreground" };
+function StepRow({
+  step,
+  view,
+  done,
+  current,
+  last,
+  onToggle,
+}: {
+  step: View["steps"][number];
+  view: View;
+  done: boolean;
+  current: boolean;
+  last: boolean;
+  onToggle: () => void;
+}) {
+  const owner =
+    step.owner === "agent"
+      ? { Icon: BotIcon, label: "Agent can do", tone: "bg-own-soft text-own" }
+      : { Icon: UserIcon, label: "You do", tone: "bg-muted text-foreground" };
+  const hasCopies = Boolean(step.copyValues?.length);
   return (
-    <li id={`step-${step.number}`} className={cn("rounded-lg border bg-card p-4 sm:p-5", done && "opacity-60")}>
-      <div className="flex gap-3">
-        <input
-          type="checkbox"
-          checked={done}
-          onChange={onToggle}
-          aria-label={`Mark step ${step.number} done`}
-          className="mt-1 size-4 shrink-0 accent-primary"
-        />
-        <div className="min-w-0 flex-1 space-y-3">
-          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-            <h4 className={cn("font-semibold", done && "line-through")}>
-              <span className="mr-2 text-muted-foreground tabular-nums">{step.number}.</span>
-              {step.title}
-            </h4>
-            <div className="flex items-center gap-2">
-              <span className={cn("inline-flex items-center gap-1 text-xs font-medium", owner.tone)}>
-                <owner.Icon className="size-3.5" aria-hidden />
-                {owner.label}
-              </span>
-              <CopyButton value={stepToMarkdown(step)} label={`Copy step ${step.number}`} done={`Step ${step.number} copied`} iconOnly />
-            </div>
+    <li id={`step-${step.number}`} className="relative flex scroll-mt-6 gap-3 pb-4 sm:gap-4">
+      {/* Timeline rail */}
+      {!last && <span aria-hidden className="absolute top-9 bottom-0 left-[15px] w-px bg-border" />}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-pressed={done}
+        aria-label={done ? `Step ${step.number} done. Mark as not done` : `Mark step ${step.number} done`}
+        className={cn(
+          "relative z-10 mt-3 flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none",
+          done ? "border-done bg-done text-white" : current ? "border-primary bg-card text-primary" : "border-border bg-card text-muted-foreground hover:border-primary/60",
+        )}
+      >
+        {done ? <CheckIcon className="size-4" aria-hidden /> : step.number}
+      </button>
+      <div
+        className={cn(
+          "min-w-0 flex-1 rounded-xl border bg-card p-4 sm:p-5",
+          current && !done && "border-primary/60 ring-4 ring-primary/10",
+          done && "bg-card/60",
+        )}
+      >
+        {current && !done && <p className="mb-2 text-xs font-semibold text-primary">You are here</p>}
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          <h4 className={cn("font-semibold text-[17px] leading-snug", done && "text-muted-foreground line-through")}>{step.title}</h4>
+          <div className="flex items-center gap-1.5">
+            <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", owner.tone)}>
+              <owner.Icon className="size-3.5" aria-hidden />
+              {owner.label}
+            </span>
+            <CopyButton value={stepToMarkdown(step)} label={`Copy step ${step.number}`} done={`Step ${step.number} copied`} iconOnly />
           </div>
-          <p className="max-w-[70ch] text-[15px] leading-relaxed">{step.detail}</p>
-          {step.copyValues?.map((c) => (
-            <div key={c.label} className="rounded-md border bg-muted/50">
-              <div className="flex items-center justify-between border-b px-3 py-1 text-xs text-muted-foreground">
-                {c.label}
-                <CopyButton value={c.value} label={`Copy ${c.label}`} done={`${c.label} copied`} iconOnly />
-              </div>
-              <pre className="overflow-x-auto p-3 font-mono text-xs leading-relaxed">{c.value}</pre>
-            </div>
-          ))}
-          {step.blocker && (
-            <div className="flex gap-2 rounded-md bg-wait-soft p-3 text-sm">
-              <AlertTriangleIcon className="mt-0.5 size-4 shrink-0 text-wait" aria-hidden />
-              <p>
-                <span className="font-medium">If you see “{step.blocker.symptom}”</span>
-                <span className="text-muted-foreground"> · </span>
-                {step.blocker.cause}. <span className="font-medium">Fix:</span> {step.blocker.fix}.
-              </p>
-            </div>
-          )}
-          <div className="flex flex-wrap items-start gap-3">
-            <EvidenceChip ids={step.evidence} evidence={view.evidence} />
-            {step.link && (
-              <a
-                href={step.link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-primary underline-offset-2 hover:underline"
-              >
-                {step.link.label}
-                <ExternalLinkIcon className="size-3" aria-hidden />
-              </a>
+        </div>
+        <div className={cn("mt-3 gap-4", hasCopies && "lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)]")}>
+          <div className="min-w-0 space-y-3">
+            <RichText text={step.detail} className="max-w-[72ch] text-[15px] leading-relaxed" />
+            {step.blocker && (
+              <details className="group rounded-r-lg border-l-4 border-blocker bg-blocker-soft/60 text-sm">
+                <summary className="flex cursor-pointer list-none items-start gap-2 p-3 font-medium focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+                  <AlertTriangleIcon className="mt-0.5 size-4 shrink-0 text-blocker" aria-hidden />
+                  <span className="min-w-0 flex-1">
+                    If you see: <span className="font-normal">&ldquo;{step.blocker.symptom.replace(/^["“]|["”]$/g, "")}&rdquo;</span>
+                  </span>
+                  <ChevronRightIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90 motion-reduce:transition-none" aria-hidden />
+                </summary>
+                <dl className="space-y-1.5 px-3 pb-3 pl-9">
+                  <div>
+                    <dt className="inline font-medium">Why: </dt>
+                    <dd className="inline">{step.blocker.cause}.</dd>
+                  </div>
+                  <div>
+                    <dt className="inline font-medium">Fix: </dt>
+                    <dd className="inline">{step.blocker.fix}.</dd>
+                  </div>
+                </dl>
+              </details>
             )}
           </div>
+          {hasCopies && (
+            <div className="mt-3 min-w-0 space-y-2 lg:mt-0">
+              {step.copyValues!.map((c) => (
+                <CodeBlock key={c.label} label={c.label} value={c.value} />
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <EvidenceChip ids={step.evidence} evidence={view.evidence} />
+          {step.link && (
+            <a href={step.link.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-primary underline-offset-2 hover:underline">
+              {step.link.label}
+              <ExternalLinkIcon className="size-3" aria-hidden />
+            </a>
+          )}
         </div>
       </div>
     </li>
@@ -415,9 +544,9 @@ function StepRow({ step, view, done, onToggle }: { step: View["steps"][number]; 
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Collapsible className="rounded-lg border">
+    <Collapsible className="rounded-xl border bg-card">
       <CollapsibleTrigger className="group flex w-full items-center gap-2 px-4 py-3 text-left font-medium hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring">
-        <ChevronRightIcon className="size-4 transition-transform group-data-[panel-open]:rotate-90" aria-hidden />
+        <ChevronRightIcon className="size-4 transition-transform group-data-[panel-open]:rotate-90 motion-reduce:transition-none" aria-hidden />
         {title}
       </CollapsibleTrigger>
       <CollapsibleContent className="border-t px-4 py-4">{children}</CollapsibleContent>
@@ -469,4 +598,3 @@ function useDoneSteps(slug: string) {
     },
   };
 }
-

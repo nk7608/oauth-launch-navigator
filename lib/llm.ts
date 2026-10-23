@@ -34,7 +34,7 @@ async function openrouter(messages: Message[], { json, signal }: { json?: boolea
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       signal,
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Title": "OAuth Launch Navigator" },
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Title": "Scopewise" },
       body: JSON.stringify(body),
     });
     const data = await res.json().catch(() => ({}));

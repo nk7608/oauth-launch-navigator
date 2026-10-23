@@ -388,7 +388,7 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
     emit({ type: "stage", stage: "check", status: "done", detail: "Nothing to check" });
     return { plan, sources: [] };
   }
-  emit({ type: "stage", stage: "search", status: "done", detail: `${sources.length} sources`, items: sources.map((s) => `[${s.id}] ${s.title}`) });
+  emit({ type: "stage", stage: "search", status: "done", detail: `${sources.length} sources`, items: [...new Set(sources.map((s) => hostOf(s.url)))] });
 
   // 4. Build (one model call)
   emit({ type: "stage", stage: "build", status: "running", detail: "Writing the plan from the sources (about a minute on free models)" });
@@ -487,4 +487,13 @@ export function starterPlan(query: string, reason: string, facts?: ToolkitFacts,
     meta: { status: "partial", generatedAt: today(), model: "rules (no AI synthesis)", fallback: { reason, composioChecked: !!confirmed } },
   };
   return finalize(plan);
+}
+
+/** "https://developers.google.com/x" → "developers.google.com" (for the progress screen's source chips). */
+function hostOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }

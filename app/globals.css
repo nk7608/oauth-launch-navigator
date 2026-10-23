@@ -2,7 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* Single light theme; dark: utilities only apply under an explicit .dark class (unused). */
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -15,6 +16,10 @@
   --color-wait: var(--wait);
   --color-wait-soft: var(--wait-soft);
   --color-own: var(--own);
+  --color-done: var(--done);
+  --color-waiting: var(--waiting);
+  --color-blocker: var(--blocker);
+  --color-blocker-soft: var(--blocker-soft);
   --color-own-soft: var(--own-soft);
   --color-ev-official: var(--ev-official);
   --color-ev-reported: var(--ev-reported);
@@ -59,73 +64,46 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Cool paper + ink. Colour carries meaning: ok = ready, wait = review/waiting, own = your own app. */
+/* Scopewise tokens. Colour carries meaning: done = tested/complete, waiting = needs someone's approval,
+   blocker = errors that stop setup, action = links and buttons. Fill tones are the brief's hexes; *-ink tones
+   are darker shades of the same hue so small text keeps WCAG AA contrast on white. */
 :root {
-  --background: #fbfcfd;
-  --foreground: #141a24;
-  --card: #ffffff;
-  --card-foreground: #141a24;
-  --popover: #ffffff;
-  --popover-foreground: #141a24;
-  --primary: #1f43c9;
-  --primary-foreground: #ffffff;
-  --secondary: #eef1f6;
-  --secondary-foreground: #141a24;
-  --muted: #f1f3f7;
-  --muted-foreground: #556070;
-  --accent: #eef1f6;
-  --accent-foreground: #141a24;
-  --destructive: #b42318;
-  --border: #e1e5ec;
-  --input: #d5dbe4;
-  --ring: #1f43c9;
-  --radius: 0.5rem;
-  --ok: #13703a;
-  --ok-soft: #e6f4ec;
-  --wait: #9a5200;
-  --wait-soft: #fdf1e1;
-  --own: #1f43c9;
-  --own-soft: #e9eefc;
-  --ev-official: #0e6b63;
-  --ev-reported: #9a5200;
-  --ev-tested: #6b2fc7;
-  --ev-inferred: #4b5565;
-  --ev-unknown: #6b7280;
+  --background: #F7F8FA;
+  --foreground: #17202E;
+  --card: #FFFFFF;
+  --card-foreground: #17202E;
+  --popover: #FFFFFF;
+  --popover-foreground: #17202E;
+  --primary: #2F5BEA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF1F5;
+  --secondary-foreground: #17202E;
+  --muted: #EEF1F5;
+  --muted-foreground: #5B6575;
+  --accent: #EEF1F5;
+  --accent-foreground: #17202E;
+  --destructive: #C2412D;
+  --border: #E3E6EB;
+  --input: #D5DAE2;
+  --ring: #2F5BEA;
+  --radius: 0.75rem;
+  --done: #1F8A5B;
+  --ok: #17704A;
+  --ok-soft: #E8F5EE;
+  --waiting: #B7791F;
+  --wait: #8A5A12;
+  --wait-soft: #FBF3E3;
+  --blocker: #C2412D;
+  --blocker-soft: #FBEDEA;
+  --own: #2F5BEA;
+  --own-soft: #EBF0FD;
+  --ev-official: #0E6B63;
+  --ev-reported: #8A5A12;
+  --ev-tested: #17704A;
+  --ev-inferred: #4B5565;
+  --ev-unknown: #5B6575;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #10141b;
-    --foreground: #e8ecf2;
-    --card: #161b24;
-    --card-foreground: #e8ecf2;
-    --popover: #161b24;
-    --popover-foreground: #e8ecf2;
-    --primary: #8aa4ff;
-    --primary-foreground: #0d1220;
-    --secondary: #1f2633;
-    --secondary-foreground: #e8ecf2;
-    --muted: #1b212c;
-    --muted-foreground: #9aa5b5;
-    --accent: #1f2633;
-    --accent-foreground: #e8ecf2;
-    --destructive: #f97066;
-    --border: #2a3240;
-    --input: #333c4c;
-    --ring: #8aa4ff;
-    --ok: #5fd08f;
-    --ok-soft: #13291d;
-    --wait: #f2b25c;
-    --wait-soft: #2d2212;
-    --own: #8aa4ff;
-    --own-soft: #1a2240;
-    --ev-official: #4fd1c1;
-    --ev-reported: #f2b25c;
-    --ev-tested: #c4a2ff;
-    --ev-inferred: #b0b9c6;
-    --ev-unknown: #9aa5b5;
-  }
-}
 
 @layer base {
   * {

@@ -120,20 +120,25 @@ export function Generating() {
         An agent is checking Composio and {query}&apos;s developer docs to build a sourced plan. This usually takes 1–2 minutes on free models.
       </p>
 
-      <ol className="mt-8 space-y-4" aria-live="polite">
-        {STAGES.map((s) => {
+      <ol className="mt-8 grid gap-4 sm:grid-cols-5 sm:gap-2" aria-live="polite">
+        {STAGES.map((s, i) => {
           const st = stages[s.id];
+          const status = problem && st.status === "running" ? "failed" : st.status;
           return (
-            <li key={s.id} className="flex gap-3">
-              <StageIcon status={problem && st.status === "running" ? "failed" : st.status} />
+            <li key={s.id} className="relative flex gap-3 sm:flex-col sm:gap-2">
+              {/* connector to the next stage on wide screens */}
+              {i < STAGES.length - 1 && (
+                <span aria-hidden className={cn("absolute top-2.5 left-7 hidden h-0.5 w-[calc(100%-1.5rem)] sm:block", st.status === "done" || st.status === "skipped" ? "bg-done" : "bg-border")} />
+              )}
+              <StageIcon status={status} />
               <div className="min-w-0">
-                <p className={cn("font-medium", st.status === "pending" && "text-muted-foreground")}>{s.label}</p>
-                {st.detail && <p className="text-sm text-muted-foreground">{st.detail}</p>}
+                <p className={cn("text-sm font-medium", st.status === "pending" && "text-muted-foreground")}>{s.label}</p>
+                {st.detail && <p className="mt-0.5 text-xs text-muted-foreground">{st.detail}</p>}
                 {st.items && (
-                  <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                    {st.items.slice(0, 12).map((i) => (
-                      <li key={i} className="truncate">
-                        {i}
+                  <ul className="mt-2 flex flex-wrap gap-1" aria-label="Sources found">
+                    {st.items.slice(0, 10).map((d) => (
+                      <li key={d} className="max-w-full truncate rounded-full border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+                        {d}
                       </li>
                     ))}
                   </ul>
@@ -185,21 +190,21 @@ function ProblemCard({ problem, query }: { problem: Problem; query: string }) {
 }
 
 function StageIcon({ status }: { status: StageState["status"] }) {
-  const base = "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full";
-  if (status === "running") return <LoaderIcon className="mt-0.5 size-5 shrink-0 animate-spin text-primary" aria-label="In progress" />;
-  if (status === "done") return <span className={cn(base, "bg-ok text-background")} aria-label="Done"><CheckIcon className="size-3.5" /></span>;
+  const base = "relative z-10 mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full";
+  if (status === "running") return <span className="relative z-10 mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-background"><LoaderIcon className="size-5 animate-spin text-primary motion-reduce:animate-none" aria-label="In progress" /></span>;
+  if (status === "done") return <span className={cn(base, "bg-done text-white")} aria-label="Done"><CheckIcon className="size-3.5" /></span>;
   if (status === "skipped") return <span className={cn(base, "bg-muted text-muted-foreground")} aria-label="Skipped"><MinusIcon className="size-3.5" /></span>;
   if (status === "failed") return <span className={cn(base, "bg-destructive text-background")} aria-label="Stopped"><XIcon className="size-3.5" /></span>;
-  return <CircleIcon className="mt-0.5 size-5 shrink-0 text-border" aria-label="Waiting" />;
+  return <span className="relative z-10 mt-0.5 flex size-5 shrink-0 rounded-full bg-background"><CircleIcon className="size-5 text-border" aria-label="Waiting" /></span>;
 }
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
+    <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
       <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
         ← All apps
       </Link>
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+      <h1 className="mt-4 text-[30px] leading-tight font-semibold tracking-tight">{title}</h1>
       <div className="mt-3">{children}</div>
     </div>
   );

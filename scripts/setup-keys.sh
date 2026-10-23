@@ -35,7 +35,7 @@ ask_secret() {
   printf -v "$name" '%s' "$value"
 }
 
-echo "OAuth Launch Navigator: API key setup"
+echo "Scopewise: API key setup"
 echo "Keys go into $(pwd)/$ENV_FILE only. Nothing is shown on screen."
 
 ask_secret COMPOSIO_API_KEY   "platform.composio.dev -> Settings -> API Keys"
