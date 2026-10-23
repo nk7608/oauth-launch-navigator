@@ -1,89 +1,157 @@
-# OAuth Launch Navigator
+<p align="center">
+  <img src="public/brand/logo-wordmark.svg" alt="Scopewise" width="260">
+</p>
 
-An independent take-home prototype that turns an app name into a sourced OAuth setup guide: what to register, which permissions matter, who must act, what can block launch, and what to do next.
+<p align="center">
+  Launch plans for your agent's OAuth apps.<br>
+  <a href="https://oauth-launch-navigator.vercel.app">Open the app</a> ·
+  <a href="https://oauth-launch-navigator.vercel.app/demo">See the demo</a> ·
+  <a href="https://oauth-launch-navigator.vercel.app/verification">What we checked</a>
+</p>
 
-It uses Composio's catalog and API for authentication facts. The Composio connection steps describe what a developer could set up after following a guide. This prototype researches and explains that process; it does not run visitors' agents or connect their accounts. The recorded Gmail and GitHub setup attempts were assignment tests.
+<p align="center">
+  <img src="docs/demo/flow.gif" alt="Search Gmail, open its plan, switch from Read to Write, copy a step" width="720">
+</p>
 
-**[Try the app](https://oauth-launch-navigator.vercel.app/)** · **[Screenshot walkthrough](https://oauth-launch-navigator.vercel.app/demo)** · **[What we checked](https://oauth-launch-navigator.vercel.app/verification)**
+## 1. The problem
 
-## Walk through the app
+When an AI agent built on Composio moves from prototype to real users, the developer usually needs their
+own OAuth app with each provider, and often the provider's approval. The requirements depend on what the
+agent does and who connects. The information is spread across many docs, so blockers show up late.
 
-1. **Find an app.** Search by name or website. The catalog has 100 entries and seven ready guides; other apps can be researched live.
-2. **Choose access and audience.** Pick Read, Write, or Not sure, then Just me, My team, or Customers. These choices update the guide without another AI call.
-3. **Follow the next action.** Read the ordered steps, copy instructions, check the sources and unknowns, or share a link that preserves your choices. JSON and Markdown support an agent handoff.
+## 2. What it does
 
-[![The app catalog and its find → choose → guide workflow](public/demo/catalog.jpg)](https://oauth-launch-navigator.vercel.app/demo)
+1. **Pick an app.** Choose from 100 apps, or type any app name or website.
+2. **Answer two questions.** What will your agent do (read, write, or both)? Who will connect accounts
+   (just you, your team, or customers)?
+3. **Follow the plan.** Numbered steps you can tick off and copy, with the blockers you might hit and how to fix them.
+   The plan updates instantly when your answers change.
 
-Gmail shows why the choices matter. Read access for customers includes restricted scopes; send-only access removes the restricted-scope assessment step.
+![Plan page with the approval path and the first step highlighted](docs/screenshots/03-plan-readiness-strip.png)
 
-| Read access | Send-only access |
-| --- | --- |
-| ![Gmail read access](public/demo/gmail-read.jpg) | ![Gmail send-only access](public/demo/gmail-send.jpg) |
+## 3. What every plan tells you
 
-**[See all eight screenshots with captions](docs/walkthrough.md)** for the complete flow: choices → next action → evidence → live research → saved result → quota fallback. These are real app captures, available even if live research is limited.
+| You want to know | Where the plan answers it |
+|---|---|
+| How easy or hard is this? | Verdict at the top, and the approval path (register → provider review → customer admin → live) |
+| How long will it take? | Hands-on effort, plus waiting time for approvals, kept separate |
+| What's required, and what could go wrong? | Scopes and what each triggers; "If you see…" blockers on the step where they happen |
+| What can an agent do, and what must I do? | Every step is tagged **Agent can do** or **You do** |
+| Where do I start? | **Next action**, and a "You are here" marker on the first open step |
+| Can I trust it? | Every claim is labelled Official, Reported, Tested, Inferred or Unknown, with its source |
 
-## What the assignment covers
+| Read vs send-only changes the plan | Copyable values and blockers on each step |
+|---|---|
+| ![Gmail read access for customers](docs/screenshots/04a-toggle-read.png) | ![Step with an expanded blocker](docs/screenshots/06-blocker-expanded.png) |
+| ![Gmail send-only for customers](docs/screenshots/04b-toggle-send.png) | ![Labelled copy blocks next to the step](docs/screenshots/05-step-copy-blocks.png) |
 
-The original brief permits a few varied guides and a working live-generation flow. It does not require all 100 guides or completed provider approvals.
+## 4. Situations it handles
 
-| Requested outcome | Included |
-| --- | --- |
-| Useful setup guidance | Steps, permissions, effort, waits, approvers, blockers, next action, and human/agent ownership |
-| Varied apps and live research | Gmail, GitHub, Slack, Pipedrive, Outlook, Notion, Trello; saved live HubSpot and Airtable examples; API-key and unknown-app paths |
-| Evidence and practical learning | Dated Gmail/GitHub setup findings, source labels, explicit unknowns, public sharing and exports |
-| Working submission | Public app and source, local setup, screenshot walkthrough and verification notes |
+Ready to use with Composio · switching to your own app · own app required · provider review required ·
+gated or partner-only access · not OAuth (e.g. API key) · not in Composio yet · not enough reliable information.
+When it can't find something, it says so instead of guessing.
 
-See [assignment coverage](docs/assignment-coverage.md) for the requirement-by-requirement mapping. Generated guides remain unreviewed; no provider approval is implied.
+| Live research on an app we never prepared | An app that isn't OAuth |
+|---|---|
+| ![Research progress with five stages](docs/screenshots/07-generating-live.png) | ![Algolia: API key path instead of OAuth](docs/screenshots/08-not-oauth-exit.png) |
 
-## Run locally
+## 5. For AI agents
 
-Use **Node.js 22**.
+Every plan has a stable link plus **JSON** (`/api/plan/<app>.json?does=read&users=customers`) and
+**Markdown** ("Copy for your AI agent"). Agents can do the "Agent can do" steps and stop at "You do" steps
+(sign-in, accepting terms, submitting for review).
+
+![JSON for agents](docs/screenshots/09-json-for-agents.png)
+
+## 6. How it works
+
+```mermaid
+flowchart LR
+  A[App name or URL] --> B[Composio API: toolkit and managed app?]
+  B --> C{Saved plan?}
+  C -- yes --> F[Plan page, JSON, Markdown]
+  C -- no --> D[Search provider docs: Tavily]
+  D --> E[One AI call writes the plan from those sources only]
+  E --> V[Checks: format, every claim sourced, known facts]
+  V --> F
+```
+
+- **Library plans** (Gmail, GitHub, Slack, Pipedrive, Outlook, Notion, Trello) were researched with Claude Code
+  from official sources; GitHub and Gmail were also set up for real. Owner review is still pending.
+  **Live plans** are researched on demand for any other app.
+- Composio facts come from Composio's API, never from the AI.
+- The AI may cite only the sources it was given. Unsupported claims become **Unknown**.
+- Changing "What will your agent do?" or "Who will connect?" reruns fixed rules, not the AI.
+
+## 7. How we checked it
+
+- **Real setups:** GitHub OAuth app connected through Composio, and a tool run. Gmail tested in Google's Testing mode.
+- **Different paths checked against official sources:** Gmail, GitHub, Slack, Pipedrive.
+- **Live research:** HubSpot (sourced plan in 87 seconds), Algolia (API-key path), a made-up app (no invented steps).
+- **What those tests changed in the guides**, and what is still unverified: see
+  [What we checked](https://oauth-launch-navigator.vercel.app/verification).
+
+## 8. Limits and fallbacks
+
+It runs on free tiers: OpenRouter free models (50 requests a day, 1 or 2 per plan) and Tavily's free search
+plan (1,000 credits a month, about 7 per plan). When limits are reached, it falls back in this order:
+
+1. **Saved plans always open.** Library and previously researched plans never call AI or search.
+2. **Quota check first.** It checks the remaining free AI requests before starting, and keeps the last 5 each day
+   for the owner's demo browser.
+3. **Other free models.** If a model is busy or down, two backup free models are tried in the same request.
+4. **Optional second provider.** If `GROQ_API_KEY` is set, one retry runs there when OpenRouter is out.
+5. **Search fallback.** If web search is out of credits, the plan is built from Composio's own setup guide for
+   that app, and the provider's review details are marked Unknown.
+6. **Starter plan.** If AI or search still isn't available, you get a clearly labelled starter plan with the facts
+   we have, a "Retry later" link, and a prompt you can copy to research the app with your own AI agent.
+
+## 9. Run it locally
 
 ```bash
 git clone https://github.com/nk7608/oauth-launch-navigator.git
 cd oauth-launch-navigator
-npm ci
-cp .env.example .env.local
-# Add your keys using your editor.
+cp .env.example .env.local   # add COMPOSIO_API_KEY, OPENROUTER_API_KEY, TAVILY_API_KEY
+npm install
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). Ready guides work without keys. Live research needs `COMPOSIO_API_KEY`, `OPENROUTER_API_KEY`, and `TAVILY_API_KEY`. Keep them server-side in the ignored `.env.local`.
+Keys stay in `.env.local` (ignored by git) or your hosting provider's settings. Useful checks:
+`npm run validate` (every guide), `npm run test:fallback` (outages and quota limits, no credits used).
+To deploy your own copy, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-`.env.example` documents the free model choices and visitor limit. Local live plans use ignored `.data/` files. On Vercel, connect a **Private Blob** store for `BLOB_READ_WRITE_TOKEN` and add the service keys as environment secrets. Follow [deployment setup](DEPLOYMENT.md).
+## 10. Key decisions
 
-## How it works
+- **Start from what the agent does, not just the app name.** Scopes decide the review, so "read" and "send"
+  can lead to very different launch plans.
+- **One structured record per app.** The page, JSON and Markdown all come from it, and answers update without a new AI call.
+- **Evidence over confidence.** Five labels, sources on every claim, and "Unknown" instead of guesses.
+- **The Composio Playground is the test step.** The app never handles anyone's credentials.
+- **$0 to run.** A free stack with fallbacks; the AI provider can be swapped with one setting.
 
-- **Facts before prose:** Composio supplies toolkit/authentication facts. Five provider searches and up to nine extracts feed one AI completion, with one repair completion if needed.
-- **Rules choose the path:** capability and audience select eight scenarios in code. Changing choices spends no research credits; exports use the same view as the page.
-- **Evidence stays visible:** Official, Reported, Tested, Inferred and Unknown labels distinguish sources from observations. Validation checks structure and consistency, not factual truth.
-- **Clear handoff:** a person handles login, consent and submissions. Steps marked Agent can do describe work a coding agent could help with; this site does not execute that work.
+## 11. Limitations
 
-The app uses Next.js, React, Tailwind and shadcn components. The home visual explains this app's flow. A separate, optional OAuth diagram appears only beside the relevant custom configuration steps.
+- No provider approval was completed; only GitHub and Gmail had hands-on setup tests.
+- Live plans are not human-reviewed, and free models are less accurate than paid ones.
+- Provider rules change, so each plan shows when it was last checked.
 
-## When research is limited
+## 12. Roadmap
 
-Library and saved guides need no new research. Temporary model failures use configured alternative free models and one retry. If AI or search stays unavailable, a **labelled starter** keeps confirmed facts and source links; provider steps, scopes and approvals remain unknown. Retry can upgrade it later. Confirmed API-key guidance can be built without AI.
+**Next:** follow-up questions answered from a plan's sources · plans built from your Composio tools ·
+review kit (scope justifications, demo-video script, privacy-policy checklist) · one plan for several apps.
+**Later:** local pre-launch check · alerts when a new tool needs a new scope · approval tracker ·
+freshness checks · Composio dashboard and MCP integration.
 
-Full research is limited to three starts per hour per IP, two concurrent runs and four minutes per run. Busy/quota-blocked requests receive a starter. Failed, cancelled and starter-only attempts release their visitor slot; a five-minute starter cooldown avoids repeated failed calls. No paid model is enabled automatically. Switching models cannot bypass an account-wide quota.
+## Assignment checklist
 
-## Check the implementation
-
-```bash
-npm run validate
-npm run test:fallback   # simulated outages and quotas; no API credits
-npm run lint
-npm run check-deploy
-npm run build
-npm start
-# In another terminal:
-npm run smoke          # all 63 library/input combinations; no live research
-```
-
-Failure tests cover AI quota, search/extraction throttling, Composio outage, repair quota, starter reuse/upgrade, congestion, visitor limits and cancellation refunds. See [production checks](PRODUCTION_VERIFICATION.md) for live observations and timing caveats.
-
-## Current limits
-
-Gmail and GitHub have recorded setup attempts. The other five ready guides have no end-to-end setup test; owner review and provider approvals remain pending. Notion has conflicting review wording, and Trello's custom OAuth 1.0 setup remains untested. Live results can contain gaps or mistakes, so read their sources before launch.
-
-Share links and exports are public, including unlisted live plans. Use public app names or websites in queries. Progress checkmarks stay in your browser. IP limits and Blob concurrency use best-effort records, so this is a demo rather than an abuse-resistant, unlimited service.
+| Asked for | Where |
+|---|---|
+| Guidance to set up an OAuth app and get it approved | Every plan page |
+| Where to start, what next, time and effort, blockers | §3 |
+| Library of guides for OAuth apps (100 listed, seven fully written) | Home page |
+| Submit any app name or website for a live guide | Search box → live research |
+| What an agent can do vs the developer | Agent / You tags, JSON and Markdown export |
+| Tested vs sourced vs uncertain | Evidence labels, [What we checked](https://oauth-launch-navigator.vercel.app/verification) |
+| Agents investigated and attempted setup | Live research pipeline; GitHub and Gmail set up for real ([details](https://oauth-launch-navigator.vercel.app/verification)) |
+| Shareable without explanation | Share link on every plan, [demo walkthrough](https://oauth-launch-navigator.vercel.app/demo) |
+| Link, repo, README with setup, decisions and limits | This page |
