@@ -115,33 +115,41 @@
    "id": "s3",
    "phase": "register",
    "title": "Set up branding and verify your domain",
-   "detail": "Add app name, support email, home page and a privacy policy hosted on the same domain as the home page. Verify the domain in Google Search Console.",
+   "detail": "Add app name, support email, home page and a privacy policy hosted on the same domain as the home page. Verify the domain in Google Search Console. Personal Google accounts (no organisation) can only choose the External audience.",
    "owner": "you",
    "evidence": [
-    "e5"
+    "e5",
+    "t1"
    ]
   },
   {
    "id": "s4",
    "phase": "register",
    "title": "Create the OAuth client and add Composio's redirect URI",
-   "detail": "Create a Web application OAuth client. Add the redirect URI shown in your Composio dashboard for this auth config.",
+   "detail": "Create a Web application OAuth client and add Composio's redirect URI. Leave \"Use this client for an AI-powered agent\" off unless you use Google's own MCP tools; Composio calls the Gmail API directly.",
    "owner": "you",
    "copyValues": [
     {
      "label": "Redirect URI",
-     "value": "Copy from Composio dashboard → Auth Configs → your Gmail config"
+     "value": "https://backend.composio.dev/api/v1/auth-apps/add"
     }
    ],
    "evidence": [
-    "e9"
-   ]
+    "e9",
+    "t2",
+    "t3"
+   ],
+   "blocker": {
+    "symptom": "redirect_uri_mismatch right after creating the client",
+    "cause": "Google says new client settings can take five minutes to a few hours to take effect",
+    "fix": "Wait and retry before changing anything"
+   }
   },
   {
    "id": "s5",
    "phase": "register",
    "title": "Declare the smallest scope that fits what your agent does",
-   "detail": "On the Data Access page, add only the scope for your chosen capability (see Scopes). An agent can pick the scope from the Gmail tools you use, but adding it needs your Google Cloud login.",
+   "detail": "Replace Composio's default Gmail scopes: they include full mailbox access and nine personal-data scopes, which would trigger the strictest review. Add only the scope for your chosen capability (see Scopes) on Google's Data Access page and in your Composio auth config.",
    "owner": "you",
    "blocker": {
     "symptom": "Users see 'App is blocked'",
@@ -151,7 +159,8 @@
    "evidence": [
     "e3",
     "e5",
-    "e7"
+    "e7",
+    "t3"
    ]
   },
   {
@@ -174,7 +183,7 @@
    "id": "s7",
    "phase": "connect_composio",
    "title": "Test it in the Composio Playground",
-   "detail": "Open the auth config → Connect Account → run one Gmail tool. While unverified, expect a warning screen, a user cap and short-lived refresh tokens.",
+   "detail": "Add yourself under Audience → Test users first. Then open the auth config, choose Connect Account, continue past \"Google hasn't verified this app\", and run one Gmail tool.",
    "owner": "you",
    "link": {
     "label": "Composio dashboard",
@@ -182,7 +191,28 @@
    },
    "evidence": [
     "e11",
-    "e5"
+    "e5",
+    "t1"
+   ],
+   "blocker": {
+    "symptom": "\"Access blocked: composio.dev has not completed the Google verification process\" (Error 403: access_denied)",
+    "cause": "In Testing mode only listed test users can sign in, and your account isn't on the list",
+    "fix": "Add the account under Audience → Test users, click Save, and check it appears in the list"
+   }
+  },
+  {
+   "id": "s7b",
+   "phase": "connect_composio",
+   "title": "Check the granted scopes, not just the connection status",
+   "detail": "Google lets users untick permissions, so a connection can be active without Gmail access. After each connection, read the connected account's granted scopes; if the Gmail scope is missing, ask the user to reconnect and tick it, then remove the old connection.",
+   "owner": "agent",
+   "blocker": {
+    "symptom": "Gmail tools fail with 403 \"Request had insufficient authentication scopes\"",
+    "cause": "The user didn't grant the Gmail permission on Google's consent screen",
+    "fix": "Send a new connect link and ask them to tick the Gmail permission"
+   },
+   "evidence": [
+    "t4"
    ]
   },
   {
@@ -246,6 +276,26 @@
    ]
   },
   {
+   "id": "s9c",
+   "phase": "launch",
+   "title": "Remove the remaining Composio branding",
+   "detail": "Your own client changes Google's consent screen, but users still see composio.dev on Google's account chooser and \"Composio wants to connect\" on the Connect Link page. Brand the Connect Link in Project Settings → White Labeling and proxy the OAuth redirect through your own domain.",
+   "owner": "you",
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "link": {
+    "label": "Composio: white-labeling authentication",
+    "url": "https://docs.composio.dev/docs/authentication/white-labeling-authentication"
+   },
+   "evidence": [
+    "t5",
+    "e8"
+   ]
+  },
+  {
    "id": "s10",
    "phase": "launch",
    "title": "Move existing users to your app",
@@ -261,7 +311,9 @@
   "Whether Composio-hosted token storage counts as server access for Google's assessment rule (inferred yes; confirm with Composio).",
   "Each Gmail scope's tier must be re-checked against Google's current list at build time.",
   "Hands-on effort estimate is untested.",
-  "Team audience: 'Internal' user type avoids review only if all users are in your own Workspace org."
+  "Team audience: a personal Google account can't use the Internal user type (tested); Internal avoids review only if every user is in your own Workspace organisation.",
+  "Which name Google's consent screen itself shows when the redirect goes through composio.dev (we didn't capture that screen).",
+  "Whether verification accepts composio.dev as an authorised domain you don't own; proxying the redirect through your domain avoids the question."
  ],
  "evidence": [
   {
@@ -325,7 +377,7 @@
   {
    "id": "e8",
    "label": "official",
-   "claim": "Existing connections keep refreshing with their original auth config; full migration means re-authentication (or import where supported).",
+   "claim": "Existing connections keep refreshing with their original auth config; full migration means re-authentication (or import where supported). To remove Composio branding: set the Connect Link logo and title in Project Settings → White Labeling, use your own OAuth app for the consent screen, and proxy the OAuth redirect through your own domain so backend.composio.dev isn't shown.",
    "sourceTitle": "Composio: White-labeling authentication",
    "url": "https://docs.composio.dev/docs/authentication/white-labeling-authentication",
    "checkedAt": "2026-10-22"
@@ -354,11 +406,51 @@
    "sourceTitle": "Composio KB: Dashboard auth configs",
    "url": "https://docs.composio.dev/kb/guide/dashboard-auth-configs-navigation",
    "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "t1",
+   "label": "tested",
+   "claim": "We created a Google Cloud project on a personal Google account (no organisation): only the External audience was available. In Testing mode Google limits sign-in to listed test users and caps the app at 100 users over its lifetime before verification. With no test user saved, sign-in failed with \"Access blocked: composio.dev has not completed the Google verification process\" (Error 403: access_denied). Once added as a test user, Google showed \"Google hasn't verified this app\" with Back to safety highlighted and Continue as the secondary button.",
+   "sourceTitle": "Our test: Google OAuth client in Testing mode via Composio (2026-10-23)",
+   "url": "https://console.cloud.google.com/auth/audience",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t2",
+   "label": "tested",
+   "claim": "Creating a Web application client: Google adds the redirect URI's domain (composio.dev) to the consent screen's authorised domains, warns that settings can take five minutes to a few hours to take effect, and offers a \"Use this client for an AI-powered agent\" option described as being for clients that use Google MCP tools.",
+   "sourceTitle": "Our test: Google Auth Platform client form (2026-10-23)",
+   "url": "https://console.cloud.google.com/auth/clients",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t3",
+   "label": "tested",
+   "claim": "Composio's own-credentials form for Gmail pre-fills the redirect URI https://backend.composio.dev/api/v1/auth-apps/add and starts with 11 scopes, including https://mail.google.com/ (full mailbox, restricted) and nine People API scopes (contacts, addresses, birthday, phone numbers and others). We replaced them with userinfo.email and gmail.readonly.",
+   "sourceTitle": "Our test: Composio Gmail auth config (2026-10-23)",
+   "url": "https://dashboard.composio.dev/",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t4",
+   "label": "tested",
+   "claim": "Google's consent let the user grant only some scopes: the first connection went ACTIVE in Composio with userinfo.email and openid but not gmail.readonly, and the first Gmail tool call failed with 403 \"Request had insufficient authentication scopes\" (ACCESS_TOKEN_SCOPE_INSUFFICIENT). Reconnecting with the Gmail permission granted created a second connected account (the first stayed active); with it, a read-only profile lookup worked and the token came with a refresh token.",
+   "sourceTitle": "Our test: connecting Gmail through Composio (2026-10-23)",
+   "url": "https://dashboard.composio.dev/",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t5",
+   "label": "tested",
+   "claim": "Even with our own Google client, Google's account chooser said \"to continue to composio.dev\" (the redirect domain), and Composio's Connect Link page said \"Composio wants to connect to your Gmail\".",
+   "sourceTitle": "Our test: what users see when connecting (2026-10-23)",
+   "url": "https://dashboard.composio.dev/",
+   "checkedAt": "2026-10-23"
   }
  ],
  "meta": {
   "status": "reference",
   "generatedAt": "2026-10-22",
-  "reviewedBy": "Hand-researched during planning"
+  "reviewedBy": "Hand-researched during planning; setup tested in Testing mode on 2026-10-23"
  }
 }

@@ -124,8 +124,8 @@
   {
    "id": "s3",
    "phase": "register",
-   "title": "Add Composio's callback URL",
-   "detail": "In Authorization callback URL, paste Composio's redirect URI. GitHub accepts up to 10 callback URLs, so you can keep a local one for testing.",
+   "title": "Add Composio's redirect URI",
+   "detail": "Under Redirect URIs, paste Composio's redirect URI and leave \"Allow wildcard matching\" off. GitHub accepts up to 10 redirect URIs, so you can keep a local one for testing.",
    "owner": "you",
    "copyValues": [
     {
@@ -135,7 +135,8 @@
    ],
    "evidence": [
     "g1",
-    "g6"
+    "g6",
+    "t1"
    ]
   },
   {
@@ -152,7 +153,7 @@
    "id": "s5",
    "phase": "connect_composio",
    "title": "Create a GitHub auth config with your credentials",
-   "detail": "Create a custom OAuth2 auth config for the github toolkit with your client ID, secret and the scopes for your capability, then pass its ID when you create sessions. Toolkits you don't list keep using Composio's managed apps.",
+   "detail": "Create a custom OAuth2 auth config for the github toolkit with your client ID and secret. Composio pre-selects 7 scopes; keep only the ones your capability needs (see Scopes). Then pass the auth config ID when you create sessions.",
    "owner": "agent",
    "copyValues": [
     {
@@ -161,7 +162,8 @@
     }
    ],
    "evidence": [
-    "g7"
+    "g7",
+    "t1"
    ]
   },
   {
@@ -175,7 +177,8 @@
     "url": "https://dashboard.composio.dev/"
    },
    "evidence": [
-    "g7"
+    "g7",
+    "t1"
    ]
   },
   {
@@ -226,7 +229,6 @@
   }
  ],
  "unknowns": [
-  "New GitHub OAuth apps expire user tokens by default; we haven't tested that Composio refreshes them (inferred yes, since Composio manages refresh for OAuth toolkits).",
   "How long customers' organization owners take to approve an app depends on each customer; GitHub publishes no estimate.",
   "Hands-on effort is an estimate and untested."
  ],
@@ -303,11 +305,20 @@
    "sourceTitle": "Composio: White-labeling authentication",
    "url": "https://docs.composio.dev/docs/authentication/white-labeling-authentication",
    "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t1",
+   "label": "tested",
+   "claim": "We registered a GitHub OAuth app on a personal account with Composio's redirect URI, created a custom Composio auth config, connected through Composio and ran a read-only GitHub tool in the Playground: it worked. GitHub's form now calls the field \"Redirect URIs\" (up to 10, with an optional \"Allow wildcard matching\") and has \"Expire user access tokens\" on by default; GitHub issued an expiring token with a refresh token, which Composio stored. Composio's form starts with 7 scopes (repo, user, gist, notifications, project, workflow, codespace); after trimming to repo and user, GitHub granted exactly those.",
+   "sourceTitle": "Our test: GitHub OAuth app connected through Composio (2026-10-23)",
+   "url": "https://github.com/settings/developers",
+   "checkedAt": "2026-10-23"
   }
  ],
  "meta": {
   "status": "generated",
   "generatedAt": "2026-10-23",
-  "model": "Claude Code (library research)"
+  "model": "Claude Code (library research)",
+  "reviewedBy": "Setup tested end to end on 2026-10-23"
  }
 }
