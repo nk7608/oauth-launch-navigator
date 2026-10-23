@@ -1,0 +1,231 @@
+{
+ "app": {
+  "name": "Trello",
+  "slug": "trello",
+  "website": "https://trello.com",
+  "category": "Project Management"
+ },
+ "composio": {
+  "toolkitExists": true,
+  "toolkitSlug": "trello",
+  "authSchemes": [
+   "OAUTH1"
+  ],
+  "managedAppAvailable": true
+ },
+ "scenarioByInput": {
+  "read|me": "A_ready_to_use",
+  "read|team": "B_switch_to_own_app",
+  "read|customers": "B_switch_to_own_app",
+  "write|me": "A_ready_to_use",
+  "write|team": "B_switch_to_own_app",
+  "write|customers": "B_switch_to_own_app",
+  "both|me": "A_ready_to_use",
+  "both|team": "B_switch_to_own_app",
+  "both|customers": "B_switch_to_own_app"
+ },
+ "summary": {
+  "setupEffort": "Create Power-Up credentials and verify the OAuth 1.0 callback with Composio; hands-on duration Unknown.",
+  "waitOfficial": "Unknown: no review turnaround for this connection path was established.",
+  "gatekeepers": [
+   "The Trello user granting account access"
+  ],
+  "nextAction": "Open your Power-Up’s Trello Auth settings and locate its API key and application secret."
+ },
+ "scopes": [
+  {
+   "scope": "read",
+   "allows": "Read boards and workspace data.",
+   "capability": "read",
+   "tier": "basic",
+   "triggers": "The connecting user approves; no universal provider review was established.",
+   "evidence": [
+    "t2",
+    "t3"
+   ]
+  },
+  {
+   "scope": "write",
+   "allows": "Change boards and workspace data.",
+   "capability": "write",
+   "tier": "basic",
+   "triggers": "The connecting user approves; no universal provider review was established.",
+   "evidence": [
+    "t2",
+    "t3"
+   ]
+  },
+  {
+   "scope": "account",
+   "allows": "Optional: access member email and change member information; omit unless needed.",
+   "capability": "both",
+   "tier": "basic",
+   "triggers": "The connecting user approves; no universal provider review was established.",
+   "evidence": [
+    "t2",
+    "t3"
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "t1",
+   "phase": "prepare",
+   "title": "Use the protocol supported by the toolkit",
+   "detail": "Use Composio’s OAUTH1 path. Trello OAuth 2.0 credentials and granular scopes are a separate flow; do not substitute them for consumer credentials.",
+   "owner": "you",
+   "evidence": [
+    "t3",
+    "t5"
+   ]
+  },
+  {
+   "id": "t2",
+   "phase": "register",
+   "title": "Generate your Power-Up API key and secret",
+   "detail": "Open trello.com/apps/admin, select your Power-Up and open Trello Auth. Generate an API key and keep its application secret for the custom connection.",
+   "owner": "you",
+   "evidence": [
+    "t1"
+   ],
+   "link": {
+    "label": "Trello Power-Up administration",
+    "url": "https://trello.com/apps/admin"
+   }
+  },
+  {
+   "id": "t3",
+   "phase": "connect_composio",
+   "title": "Create a custom Trello auth config",
+   "detail": "In Composio select Trello OAUTH1 and enter consumer_key and consumer_secret from your Power-Up. Trim the default read,write,account permissions to the actual tools.",
+   "owner": "you",
+   "evidence": [
+    "t3",
+    "t6"
+   ]
+  },
+  {
+   "id": "t4",
+   "phase": "connect_composio",
+   "title": "Confirm the OAuth 1.0 callback configuration",
+   "detail": "Inspect the callback requirements in the Composio dashboard or ask Composio support before connecting users. The OAuth 2.0 redirect used by other toolkits is not verified for this flow.",
+   "owner": "you",
+   "evidence": [
+    "t3",
+    "t4"
+   ],
+   "blocker": {
+    "symptom": "Authorization fails to return to Composio.",
+    "cause": "The custom OAuth 1.0 callback configuration has not been verified.",
+    "fix": "Confirm the required callback and provider allow-list settings with Composio before rollout."
+   }
+  },
+  {
+   "id": "t5",
+   "phase": "get_approved",
+   "title": "Confirm distribution requirements before inviting customers",
+   "detail": "Check whether your intended Power-Up distribution needs a separate review. Its requirements and turnaround are Unknown for this setup.",
+   "owner": "you",
+   "evidence": [
+    "t4"
+   ],
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   }
+  },
+  {
+   "id": "t6",
+   "phase": "launch",
+   "title": "Connect a test account and read one board",
+   "detail": "Use the custom auth config in the Playground or a Connect Link, authorize a test account and run a board-read tool. Test write tools on disposable data before launch.",
+   "owner": "you",
+   "evidence": [
+    "t3",
+    "t6"
+   ]
+  },
+  {
+   "id": "t7",
+   "phase": "launch",
+   "title": "Handle revoked connections",
+   "detail": "When Trello rejects a revoked token, ask the affected user to authorize again. Include this recovery path in your product.",
+   "owner": "agent",
+   "evidence": [
+    "t2"
+   ]
+  }
+ ],
+ "unknowns": [
+  "Custom Composio OAuth 1.0 callback and allow-list settings need an end-to-end test.",
+  "No universal review requirement or review duration was established for this connection path.",
+  "OAuth 2.0 is documented by Trello but is not currently listed by the Composio toolkit API.",
+  "The legacy token endpoint expiration choices have not been verified for Composio OAuth 1.0.",
+  "This guide is sourced research, not a successful setup test."
+ ],
+ "evidence": [
+  {
+   "id": "t1",
+   "label": "official",
+   "claim": "Trello supports OAuth 1.0 with request-token, authorize-token and access-token endpoints. A Power-Up’s Trello Auth tab provides the API key and application secret.",
+   "sourceTitle": "Atlassian: Trello authorization",
+   "checkedAt": "2026-10-23",
+   "url": "https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/"
+  },
+  {
+   "id": "t2",
+   "label": "official",
+   "claim": "The legacy authorization permissions are read, write and account; account includes the consenting member’s email. Allowed Origins in this document governs return_url redirects.",
+   "sourceTitle": "Atlassian: Legacy authorization options",
+   "checkedAt": "2026-10-23",
+   "url": "https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/"
+  },
+  {
+   "id": "t3",
+   "label": "official",
+   "claim": "The live Composio Trello toolkit uses managed OAUTH1; custom configs require consumer_key and consumer_secret and default to read,write,account. No OAuth redirect field is exposed.",
+   "sourceTitle": "Composio API: Trello toolkit",
+   "checkedAt": "2026-10-23",
+   "url": "https://backend.composio.dev/api/v3.1/toolkits/trello"
+  },
+  {
+   "id": "t4",
+   "label": "unknown",
+   "claim": "The exact OAuth 1.0 callback/allow-list settings for the current Composio custom flow and any distribution review requirements remain unverified.",
+   "sourceTitle": "Unverified custom Trello launch requirements",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "t5",
+   "label": "official",
+   "claim": "Trello also documents OAuth 2.0 with more granular permissions and refreshable tokens. That protocol is distinct from Composio’s current OAuth 1.0 toolkit.",
+   "sourceTitle": "Atlassian: Trello OAuth 2.0",
+   "checkedAt": "2026-10-23",
+   "url": "https://developer.atlassian.com/cloud/trello/guides/rest-api/oauth-2-getting-started/"
+  },
+  {
+   "id": "t6",
+   "label": "official",
+   "claim": "Custom auth configs select your own provider credentials for a session through authConfigs.",
+   "sourceTitle": "Composio: Custom auth configs",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app"
+  }
+ ],
+ "meta": {
+  "status": "generated",
+  "generatedAt": "2026-10-23",
+  "model": "Codex (library research)"
+ },
+ "access": {
+  "gated": false,
+  "reviewForCustomers": false,
+  "note": "This is the Composio OAuth 1.0 path; its callback setup and any separate distribution review must be confirmed before launch.",
+  "evidence": [
+   "t1",
+   "t3",
+   "t4"
+  ]
+ }
+}
