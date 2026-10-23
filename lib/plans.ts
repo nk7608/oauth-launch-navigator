@@ -1,12 +1,17 @@
 // One place to look up a plan record by slug: the library first, then live-generated plans.
 import "server-only";
 import { loadGuide } from "@/lib/guides";
-import type { Plan } from "@/lib/plan-schema";
+import { Plan } from "@/lib/plan-schema";
 import { planToMarkdown } from "@/lib/markdown";
 import { SCENARIO_LABEL, type Inputs, viewPlan } from "@/lib/rules";
+import { getStoredPlan } from "@/lib/runs";
 
 export async function getPlan(slug: string): Promise<Plan | undefined> {
-  return loadGuide(slug);
+  const library = loadGuide(slug);
+  if (library) return library;
+  const stored = await getStoredPlan(slug);
+  const parsed = stored && Plan.safeParse(stored.plan);
+  return parsed?.success ? parsed.data : undefined;
 }
 
 const OWNER_LABEL = { you: "You do", agent: "Agent can do" } as const;

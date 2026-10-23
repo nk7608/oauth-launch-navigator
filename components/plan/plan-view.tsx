@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { AlertTriangleIcon, ArrowLeftIcon, BotIcon, ChevronRightIcon, ExternalLinkIcon, FileTextIcon, UserIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SetupBadge } from "@/components/setup-badge";
@@ -16,6 +16,7 @@ import {
   CAPABILITY_OPTIONS,
   DEFAULT_INPUTS,
   PHASES,
+  REQUEST_BOARD_URL,
   SCENARIO_LABEL,
   parseInputs,
   viewPlan,
@@ -142,7 +143,27 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
           </dl>
         </header>
 
-        <PhasePath view={view} />
+        {view.scenario === "H_insufficient_info" ? (
+          <section aria-labelledby="checked" className="rounded-lg border p-5">
+            <h2 id="checked" className="font-semibold">
+              What we checked
+            </h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px]">
+              {view.unknowns.map((u) => (
+                <li key={u}>{u}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-muted-foreground">
+              If this app is real and Composio doesn&apos;t support it yet, you can{" "}
+              <a href={REQUEST_BOARD_URL} target="_blank" rel="noreferrer" className="text-primary underline">
+                request it from Composio
+              </a>
+              .
+            </p>
+          </section>
+        ) : (
+          <PhasePath view={view} />
+        )}
 
         <section aria-labelledby="next-action" className="rounded-lg border-l-4 border-primary bg-own-soft px-5 py-4">
           <h2 id="next-action" className="text-sm font-semibold text-primary">
@@ -155,7 +176,7 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
           <h2 id="steps" className="sr-only">
             Steps
           </h2>
-          {view.steps.length === 0 && <p className="text-muted-foreground">No steps apply to this setup.</p>}
+          {view.steps.length === 0 && view.scenario !== "H_insufficient_info" && <p className="text-muted-foreground">No steps apply to this setup.</p>}
           {PHASES.map((phase) => {
             const steps = view.steps.filter((s) => s.phase === phase.id);
             if (!steps.length) return null;
@@ -388,27 +409,47 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-/** Step checkboxes, saved in this browser only. */
+// Step checkboxes, saved in this browser only (falls back to memory when storage is blocked).
+const doneListeners = new Set<() => void>();
+const memoryDone = new Map<string, string>();
+
+function readDone(key: string) {
+  try {
+    return localStorage.getItem(key) ?? "[]";
+  } catch {
+    return memoryDone.get(key) ?? "[]";
+  }
+}
+
+function subscribeDone(cb: () => void) {
+  doneListeners.add(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    doneListeners.delete(cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 function useDoneSteps(slug: string) {
   const key = `oln:done:${slug}`;
-  const [ids, setIds] = useState<string[]>([]);
-  useEffect(() => {
+  const raw = useSyncExternalStore(subscribeDone, () => readDone(key), () => "[]");
+  const ids = useMemo<string[]>(() => {
     try {
-      setIds(JSON.parse(localStorage.getItem(key) ?? "[]"));
+      return JSON.parse(raw);
     } catch {
-      setIds([]);
+      return [];
     }
-  }, [key]);
+  }, [raw]);
   return {
     has: (id: string) => ids.includes(id),
     toggle: (id: string) => {
-      const next = ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id];
-      setIds(next);
+      const next = JSON.stringify(ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]);
       try {
-        localStorage.setItem(key, JSON.stringify(next));
+        localStorage.setItem(key, next);
       } catch {
-        /* storage blocked: progress just isn't remembered */
+        memoryDone.set(key, next);
       }
+      doneListeners.forEach((l) => l());
     },
   };
 }

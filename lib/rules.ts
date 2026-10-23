@@ -183,12 +183,27 @@ const VERDICT: Record<Scenario, (p: Plan, ctx: { reason?: string; gatekeeper: st
   D_review_required: (p, c) =>
     `You need your own ${p.app.name} OAuth app, and ${c.gatekeeper} must approve it before ${c.who} can connect.${c.reason ? ` What's involved: ${c.reason.replace(/\.$/, "")}.` : ""}`,
   E_gated_access: (p, c) => `${p.app.name} limits API access, so apply to ${c.gatekeeper} first. Nothing else moves until that's approved.`,
-  F_not_oauth: (p) =>
-    `${p.app.name} connects with ${p.composio.authSchemes.map((s) => s.replace(/_/g, " ").toLowerCase()).join(" or ")}, not OAuth, so there's no app to register or review.`,
-  G_not_in_composio: (p) =>
-    `Composio doesn't support ${p.app.name} yet. You can still set up the provider side now and request the toolkit from Composio.`,
+  F_not_oauth: (p) => `${p.app.name} connects with ${authPhrase(p.composio.authSchemes)}, not OAuth, so there's no app to register or review.`,
+  G_not_in_composio: (p, c) =>
+    `Composio doesn't support ${p.app.name} yet. You can still set up the provider side now and request the toolkit from Composio.${accessNote(p, c)}`,
   H_insufficient_info: (p) => `We couldn't find enough reliable information to build a plan for ${p.app.name}.`,
 };
+
+const AUTH_PHRASE: Record<string, string> = {
+  API_KEY: "an API key",
+  BEARER_TOKEN: "a bearer token",
+  BASIC: "a username and password",
+  BASIC_WITH_JWT: "a username and password",
+  NO_AUTH: "no credentials",
+  GOOGLE_SERVICE_ACCOUNT: "a Google service account",
+  SERVICE_ACCOUNT: "a service account",
+  SAML: "SAML",
+};
+
+export function authPhrase(schemes: string[]) {
+  const phrases = [...new Set(schemes.map((s) => AUTH_PHRASE[s] ?? s.replace(/_/g, " ").toLowerCase()))];
+  return phrases.length > 1 ? `${phrases.slice(0, -1).join(", ")} or ${phrases.at(-1)}` : (phrases[0] ?? "credentials");
+}
 
 const WHO: Record<Audience, string> = { me: "you", team: "your team", customers: "customers" };
 
@@ -226,10 +241,19 @@ export function viewPlan(plan: Plan, inputs: Inputs): PlanView {
     .sort((a, b) => order.indexOf(a.phase) - order.indexOf(b.phase))
     .map((s, i) => ({ ...s, number: i + 1 }));
 
-  const needsReview = scenario === "D_review_required" || scenario === "E_gated_access";
+  // Apps outside Composio (G) can still face provider review; judge that from the provider facts, not the scenario.
+  const providerReview =
+    Boolean(plan.access?.gated) ||
+    (inputs.users === "customers" && (Boolean(plan.access?.reviewForCustomers) || scopes.some((s) => REVIEW_TIERS.includes(s.tier))));
+  const needsReview = scenario === "D_review_required" || scenario === "E_gated_access" || (scenario === "G_not_in_composio" && providerReview);
   const wait = needsReview
-    ? { official: plan.summary.waitOfficial ?? "Unknown", reported: plan.summary.waitReported }
-    : { none: scenario === "A_ready_to_use" ? "None. Start now." : "No provider review for this setup." };
+    ? {
+        official: plan.summary.waitOfficial ?? "Unknown",
+        reported: plan.summary.waitReported && !/^unknown/i.test(plan.summary.waitReported) ? plan.summary.waitReported : undefined,
+      }
+    : scenario === "H_insufficient_info"
+      ? { none: "Unknown" }
+      : { none: scenario === "A_ready_to_use" ? "None. Start now." : "No provider review for this setup." };
 
   const effort =
     scenario === "A_ready_to_use"

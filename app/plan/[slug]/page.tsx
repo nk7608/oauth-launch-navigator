@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { PlanViewLive, PlanViewStatic } from "@/components/plan/plan-view";
 import { apps, getApp } from "@/lib/apps";
 import { librarySlugs, loadGuide } from "@/lib/guides";
+import { getPlan } from "@/lib/plans";
 
 export function generateStaticParams() {
   return [...new Set([...librarySlugs(), ...apps.map((a) => a.slug)])].map((slug) => ({ slug }));
@@ -11,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/plan/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const name = loadGuide(slug)?.app.name ?? getApp(slug)?.name ?? slug;
+  const name = loadGuide(slug)?.app.name ?? getApp(slug)?.name ?? (await getPlan(slug))?.app.name ?? slug;
   return { title: `${name} OAuth launch plan` };
 }
 
@@ -25,7 +26,8 @@ export default function PlanPage({ params }: PageProps<"/plan/[slug]">) {
 
 async function PlanBody({ params }: { params: PageProps<"/plan/[slug]">["params"] }) {
   const { slug } = await params;
-  const plan = loadGuide(slug);
+  // Library plans render statically; live plans come from the store at request time.
+  const plan = loadGuide(slug) ?? (await getPlan(slug));
   if (!plan) return <NoGuideYet slug={slug} />;
   return (
     <Suspense fallback={<PlanViewStatic plan={plan} />}>
