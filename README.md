@@ -3,6 +3,9 @@
 Tell it an app and what your AI agent does. Get a sourced plan to register your own OAuth app,
 handle approval, and connect it to Composio: the order, who acts, waits, blockers and permissions.
 
+**Live:** [oauth-launch-navigator.vercel.app](https://oauth-launch-navigator.vercel.app) ·
+[Verification](https://oauth-launch-navigator.vercel.app/verification)
+
 ## Run locally
 
 Use Node.js 22. The downloaded folder name ends in a space, so quote its path.
@@ -86,6 +89,12 @@ and output size; an earlier attempt took 210 seconds. These are two observations
 statistics. Targets remain p50 ≤120 seconds and p95 ≤200 seconds. On 2026-10-23 both configured models
 were still listed with JSON output and zero prompt/completion pricing.
 
+Production checks on 2026-10-23: HubSpot 87.2 seconds, Algolia 3.7 seconds without AI, and the
+fictional app 3.9 seconds with no invented steps. All persisted in private Blob. The timed
+walkthrough took 176 seconds. HubSpot first progress, measured from the initial POST including
+stream setup, took 2.085 seconds, narrowly above the 2-second target. See
+[PRODUCTION_VERIFICATION.md](PRODUCTION_VERIFICATION.md).
+
 ## Free-tier limits and limitations
 
 - OpenRouter free models allow 20 requests/minute and, without the qualifying credit purchase,
@@ -136,8 +145,9 @@ run `npm run validate -- <slug> --fix-scenarios`, and commit each guide's correc
 
 `vercel.json` runs validation and the production configuration check before building. Follow
 [DEPLOYMENT.md](DEPLOYMENT.md) for private Blob, environment variables and the J1–J8 checklist.
-The handoff requires approval before creating Vercel resources or pushing to GitHub. A local build
-does not imply deployment.
+The owner approved deployment on 2026-10-23. The Vercel Hobby project and Private Blob store are
+connected, and the public production site is live. No GitHub repository was created or pushed.
+See [PRODUCTION_VERIFICATION.md](PRODUCTION_VERIFICATION.md) for the completed checks.
 
 ## Roadmap
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import production from "@/data/verification.json";
 import { getApp } from "@/lib/apps";
 import { librarySlugs, loadGuide } from "@/lib/guides";
 import { validatePlan } from "@/lib/validate";
@@ -64,6 +65,44 @@ export default function VerificationPage() {
         </div>
       </header>
 
+      <section aria-labelledby="production-title" className="rounded-lg border bg-card p-5">
+        <h2 id="production-title" className="text-xl font-semibold">Production checks</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Recorded <time dateTime={production.checkedAt}>{production.checkedAt}</time> on the{" "}
+          <a href={production.url} className="text-primary underline underline-offset-4">public deployment</a>.
+          All {production.guideInputChecks} guide/input checks passed. Search, Gmail toggles, copying,
+          shared links, agent exports and private storage were checked. The walkthrough including live
+          research took {Math.floor(production.demoSeconds / 60)} minutes {production.demoSeconds % 60} seconds.
+        </p>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <caption className="sr-only">Live generation tests on production</caption>
+            <thead>
+              <tr className="border-b">
+                <th scope="col" className="py-2 pr-3 font-medium">App</th>
+                <th scope="col" className="py-2 pr-3 font-medium">Result</th>
+                <th scope="col" className="py-2 font-medium">Elapsed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {production.liveRuns.map((run) => (
+                <tr key={run.slug} className="border-b last:border-0">
+                  <th scope="row" className="py-3 pr-3 font-medium">
+                    <Link href={`/plan/${run.slug}`} className="text-primary hover:underline">{run.query}</Link>
+                  </th>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    {run.scenario === "F_not_oauth" ? "API key; no AI call" : run.scenario === "H_insufficient_info" ? "Insufficient information; no steps invented" : "Sourced plan generated"}
+                    <span className="block text-xs">Saved and retrieved from private storage</span>
+                  </td>
+                  <td className="py-3 font-mono tabular-nums">{(run.elapsedMs / 1000).toFixed(1)}s</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {production.notes.map((note) => <p key={note} className="mt-3 text-sm text-muted-foreground">{note}</p>)}
+      </section>
+
       <section aria-labelledby="tested-title">
         <h2 id="tested-title" className="text-xl font-semibold">Tested in real accounts</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -122,7 +161,7 @@ export default function VerificationPage() {
         </ul>
         <p className="mt-4 text-sm text-muted-foreground">
           Validation checks record structure and consistency. It cannot prove a cited page supports every claim,
-          or replace a successful setup test. Production journeys and the timed demo still require a deployed app.
+          or replace a successful provider setup test. Production observations are recorded separately above.
         </p>
       </section>
 

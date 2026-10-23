@@ -1,5 +1,12 @@
 # Deployment and acceptance checklist
 
+**Deployed with owner approval on 2026-10-23:** [oauth-launch-navigator.vercel.app](https://oauth-launch-navigator.vercel.app).
+Project `oauth-launch-navigator` in `nk7608s-projects`; Blob `store_rISLkokuIn5Ux1Y0` is Private and
+connected to Production and Preview. Node 22.x and Fluid compute are enabled. The three service
+keys are Vercel Secrets; model and visitor settings are configured. No GitHub push or paid upgrade
+was used. Functional production checks and the timed walkthrough completed; see
+[PRODUCTION_VERIFICATION.md](PRODUCTION_VERIFICATION.md). The preparation record below is historical.
+
 Prepared 2026-10-23. The signed-in Vercel team is `nk7608s-projects` (Hobby). Searching its projects
 for `oauth` returned no results; Storage showed no stores. This folder has no `.vercel` link,
 Git remote or installed Vercel CLI. These observations agree with HANDOFF.md: deployment was not

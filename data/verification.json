@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-23",
+  "url": "https://oauth-launch-navigator.vercel.app",
+  "testedDeploymentId": "dpl_5V8Sr8KnFU5oZLtP9hJuyuQtZ2JJ",
+  "guideInputChecks": 63,
+  "demoSeconds": 176,
+  "liveRuns": [
+    {
+      "query": "HubSpot",
+      "slug": "hubspot",
+      "cachedInitially": false,
+      "firstStageMs": 2085,
+      "elapsedMs": 87184,
+      "scenario": "B_switch_to_own_app",
+      "status": "generated",
+      "model": "dots-studio/dots-3-note-preview:free",
+      "steps": 8,
+      "evidence": 10,
+      "unknowns": 3,
+      "stored": true
+    },
+    {
+      "query": "Algolia",
+      "slug": "algolia",
+      "cachedInitially": false,
+      "firstStageMs": 1523,
+      "elapsedMs": 3692,
+      "scenario": "F_not_oauth",
+      "status": "generated",
+      "model": "rules (no AI call)",
+      "steps": 4,
+      "evidence": 3,
+      "unknowns": 0,
+      "stored": true
+    },
+    {
+      "query": "Zorblat CRM",
+      "slug": "zorblat-crm",
+      "cachedInitially": false,
+      "firstStageMs": 1494,
+      "elapsedMs": 3927,
+      "scenario": "H_insufficient_info",
+      "status": "partial",
+      "model": "rules (no AI call)",
+      "steps": 0,
+      "evidence": 0,
+      "unknowns": 3,
+      "stored": true
+    }
+  ],
+  "notes": [
+    "HubSpot first stage arrived 2.085 seconds after starting the POST request, including run creation and stream setup; this narrowly missed the end-to-end 2-second target.",
+    "These tests verify this app\u2019s research and storage behavior, not successful OAuth registration with HubSpot or Algolia. Generated provider guidance remains unreviewed."
+  ]
+}

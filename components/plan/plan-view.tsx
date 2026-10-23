@@ -139,7 +139,7 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
                 </>
               )}
             </Fact>
-            <Fact term="Who must approve">{view.gatekeepers.length ? view.gatekeepers.join("; ") : "No one outside your team"}</Fact>
+            <Fact term="Who must approve">{view.gatekeepers.length ? view.gatekeepers.join("; ") : view.scenario === "H_insufficient_info" ? "Unknown" : "No one outside your team"}</Fact>
           </dl>
         </header>
 
