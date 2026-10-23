@@ -37,8 +37,8 @@ async function main() {
   assert.match(generationSetupIssue({ ...keys, LLM_PROVIDER: "unsupported" })!, /openrouter/);
   console.log("PASS free-request quota and deployment configuration guards");
 
-  assert.match(await (await read("/")).text(), /guides ready/);
-  assert.match(await (await read("/verification")).text(), /Real setup attempts/);
+  assert.match(await (await read("/")).text(), /researched guides ready/);
+  assert.match(await (await read("/verification")).text(), /We set up real OAuth apps/);
 
   const customerScenario: Record<string, string> = {
     gmail: "D_review_required", github: "B_switch_to_own_app", slack: "D_review_required",

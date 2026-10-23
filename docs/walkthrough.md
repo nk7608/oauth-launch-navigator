@@ -10,7 +10,7 @@ The flow is: **find an app → choose access and audience → follow the next ac
 
 Search by app name or website. Seven guides are ready; other apps can be researched live. This prototype gives setup guidance—it does not run your agent or connect your accounts.
 
-![App catalog with search and the three-step guide workflow](../public/demo/catalog.jpg)
+![Scopewise home with search, connection diagram and app catalog](../public/demo/catalog.jpg)
 
 [Open the catalog](https://oauth-launch-navigator.vercel.app/)
 

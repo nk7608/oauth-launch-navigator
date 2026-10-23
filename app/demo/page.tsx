@@ -10,7 +10,7 @@ export default function DemoPage() {
     <p className="mt-3 max-w-3xl text-muted-foreground">Real screenshots of Scopewise, from finding an app to a sourced plan, live research and the fallback when free limits run out. Browsing them uses no research credits.</p>
     <ScreenshotWalkthrough />
     <div className="mt-8 flex flex-wrap gap-5 text-sm text-primary underline">
-      <a href="https://github.com/nk7608/oauth-launch-navigator/blob/main/docs/walkthrough.md">All screenshots and captions on GitHub</a>
+      <a href="https://github.com/nk7608/oauth-launch-navigator/blob/main/docs/demo/transcript.md">All screenshots and captions on GitHub</a>
       <Link href="/verification">What we checked</Link>
     </div>
   </div>;
