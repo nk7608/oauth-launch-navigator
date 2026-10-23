@@ -60,7 +60,7 @@ async function openrouter(messages: Message[], { json, signal }: { json?: boolea
 /** Remaining free requests today, or undefined if OpenRouter doesn't say. */
 export async function remainingQuota(): Promise<number | undefined> {
   try {
-    const res = await fetch("https://openrouter.ai/api/v1/key", { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
+    const res = await fetch("https://openrouter.ai/api/v1/key", { signal: AbortSignal.timeout(5_000), headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
     if (!res.ok) return undefined;
     const d = (await res.json()).data;
     return freeRequestsRemaining(d);

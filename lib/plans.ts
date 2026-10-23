@@ -34,8 +34,9 @@ export function planToJson(plan: Plan, inputs: Inputs, baseUrl: string) {
     wait: view.wait,
     gatekeepers: view.gatekeepers,
     nextAction: view.nextAction,
-    agentGuidance:
-      "Do steps with owner \"agent\" in order. At the first step with owner \"you\", stop and hand it to the user: never sign in, accept terms, pay, or submit a review on their behalf.",
+    agentGuidance: plan.meta.fallback
+      ? "This is a partial starter, not a completed setup guide. Do not infer provider requirements from missing fields. If meta.fallback.composioChecked is false, Composio support is unconfirmed. Retry full research later."
+      : "Do steps with owner \"agent\" in order. At the first step with owner \"you\", stop and hand it to the user: never sign in, accept terms, pay, or submit a review on their behalf.",
     steps: view.steps.map((s) => ({ ...s, ownerLabel: OWNER_LABEL[s.owner] })),
     scopes: view.scopes,
     unknowns: view.unknowns,

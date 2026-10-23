@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { PlanViewLive, PlanViewStatic } from "@/components/plan/plan-view";
 import { apps, getApp } from "@/lib/apps";
@@ -42,9 +41,9 @@ function NoGuideYet({ slug }: { slug: string }) {
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <h1 className="text-2xl font-semibold">No plan for {name} yet</h1>
       <p className="mt-2 text-muted-foreground">An agent can research {name} now and build a sourced plan. It takes about 2 minutes.</p>
-      <Link href={`/generate?q=${encodeURIComponent(name)}`} className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground">
+      <a href={`/generate?q=${encodeURIComponent(name)}`} className="mt-6 inline-flex rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground">
         Generate a plan for {name}
-      </Link>
+      </a>
     </div>
   );
 }

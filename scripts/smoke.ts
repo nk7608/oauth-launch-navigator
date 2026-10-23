@@ -38,7 +38,7 @@ async function main() {
   console.log("PASS free-request quota and deployment configuration guards");
 
   assert.match(await (await read("/")).text(), /guides ready/);
-  assert.match(await (await read("/verification")).text(), /Tested in real accounts/);
+  assert.match(await (await read("/verification")).text(), /Real setup attempts/);
 
   const customerScenario: Record<string, string> = {
     gmail: "D_review_required", github: "B_switch_to_own_app", slack: "D_review_required",

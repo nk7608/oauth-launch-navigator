@@ -9,6 +9,7 @@ export function planToMarkdown(plan: Plan, view: PlanView, url?: string): string
   const lines: string[] = [];
   lines.push(`# ${plan.app.name}: OAuth launch plan`, "");
   lines.push(`**${SCENARIO_LABEL[view.scenario]}.** ${view.verdict}`, "");
+  if (plan.meta.fallback) lines.push(`**Starter plan:** ${plan.meta.fallback.reason} Full research is incomplete; empty Composio fields are unconfirmed when composioChecked is false.`, "");
   lines.push("Assumptions:", ...view.assumptions.map((a) => `- ${a}`), "");
   lines.push(`- **Setup effort:** ${view.effort}`);
   if (view.wait.none) lines.push(`- **Wait:** ${view.wait.none}`);

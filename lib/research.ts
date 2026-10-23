@@ -67,7 +67,10 @@ export async function research(app: string, opts: { providerDomain?: string; sig
   if (relevant.length < 2) return { sources: [] as Source[], relevantCount: relevant.length, queries };
 
   const top = relevant.slice(0, max);
-  const extracted = await tavily<{ results: { url: string; raw_content: string }[] }>("extract", { urls: top.map((t) => t.url), extract_depth: "basic" }, signal);
+  const extracted = await tavily<{ results: { url: string; raw_content: string }[] }>("extract", { urls: top.map((t) => t.url), extract_depth: "basic" }, signal).catch((error) => {
+    if (signal?.aborted) throw error;
+    return { results: [] }; // Search snippets remain useful when extraction is throttled.
+  });
   const sources = top
     .map((t) => ({ url: t.url, title: t.title, content: extracted.results.find((r) => r.url === t.url)?.raw_content ?? t.content }))
     .filter((s) => s.content)

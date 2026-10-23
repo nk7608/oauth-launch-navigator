@@ -27,10 +27,12 @@ const LIBRARY_EXAMPLES = [
 type Problem = { code: string; message: string };
 
 export function Generating() {
-  const query = useSearchParams().get("q")?.trim() ?? "";
+  const params = useSearchParams();
+  const query = params.get("q")?.trim() ?? "";
+  const retry = params.get("retry") === "1";
   const router = useRouter();
   const [stages, setStages] = useState<Record<StageId, StageState>>(() =>
-    Object.fromEntries(STAGES.map((s) => [s.id, { status: "pending" }])) as Record<StageId, StageState>,
+    Object.fromEntries(STAGES.map((s) => [s.id, { status: s.id === "identify" ? "running" : "pending" }])) as Record<StageId, StageState>,
   );
   const [problem, setProblem] = useState<Problem | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -38,6 +40,8 @@ export function Generating() {
   const [now, setNow] = useState(() => Date.now());
   const [finished, setFinished] = useState(false);
   const sourceRef = useRef<EventSource | null>(null);
+  const startController = useRef<AbortController | null>(null);
+  const cancelled = useRef(false);
   const started = useRef(false);
 
   useEffect(() => {
@@ -50,7 +54,10 @@ export function Generating() {
     if (!query || started.current) return;
     started.current = true;
     (async () => {
-      const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
+      const controller = new AbortController();
+      startController.current = controller;
+      const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query, retry }), signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30_000)]) });
+      if (cancelled.current) return;
       const data = await res.json().catch(() => ({ code: "failed", message: "Couldn't start the run." }));
       if (data.cached) {
         router.replace(`/plan/${data.slug}`);
@@ -81,12 +88,17 @@ export function Generating() {
         es.close();
         setProblem(data ? JSON.parse(data) : { code: "failed", message: "The connection dropped. Try again." });
       });
-    })();
-  }, [query, router]);
+    })().catch((error) => {
+      if (cancelled.current) return;
+      setProblem({ code: "failed", message: error?.name === "TimeoutError" ? "Starting research took too long. Try again; an existing run will be reused." : "Could not reach the server. Check your connection and try again." });
+    });
+  }, [query, retry, router]);
 
   useEffect(() => () => sourceRef.current?.close(), []);
 
   function cancel() {
+    cancelled.current = true;
+    startController.current?.abort();
     sourceRef.current?.close();
     setProblem({ code: "cancelled", message: "Cancelled. Nothing was saved." });
   }

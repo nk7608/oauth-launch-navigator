@@ -2,6 +2,15 @@
 
 Status as of 2026-10-23. Read this file, `CLAUDE.md` (the brief) and `.claude/skills/oauth-guide-research/SKILL.md` before continuing.
 
+## Public submission update: 2026-10-23
+
+- Owner approved the public repository `nk7608/oauth-launch-navigator`; source publication will preserve its initial placeholder commit. See README for the current walkthrough and setup.
+- Added a home workflow diagram (search → choices → sourced guide), and a separate optional diagram only in custom Composio configuration steps. This is an independent assignment prototype, not a product that runs agents or connects visitors’ accounts. Reduced `/verification` to setup attempts, varied examples, live research and uncertainty.
+- Added no-AI starter plans for visitor/busy/quota limits and service failures. Starters retain facts/source links, never claim a completed provider guide, and can be upgraded on retry. Failed/cancelled/starter attempts release visitor reservations. Extraction throttling preserves search snippets.
+- `npm run test:fallback` checks failure paths with fixtures and no API credits. All 63 production guide/input smoke checks pass. No configured credential values were found in publishable files or Git history.
+- Screenshot walkthrough: `/demo`; screenshots and captions are linked from README.
+- The sections below describe earlier stages. Their statements about unpublished source or unfinished deployment are historical, not the current status.
+
 ## Deployment continuation: 2026-10-23 (Codex)
 
 - User explicitly approved creating the project/private store, adding existing keys and deploying publicly. User completed Vercel CLI MFA in Chrome. No further deployment approval is needed for this authorized setup.

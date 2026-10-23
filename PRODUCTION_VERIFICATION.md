@@ -56,3 +56,14 @@ The original Google/GitHub OAuth setup tests remain separate dated evidence. Own
 content is still pending; application testing does not mark a provider guide Verified.
 
 The machine-readable observations are in `data/verification.json` and the public `/verification` page.
+
+## Completion checks and screenshot walkthrough — 23 October 2026
+
+- A fresh Airtable run outside the catalog completed and saved a generated guide with seven steps, six evidence entries and six explicit unknowns. The page and JSON export were retrieved afterward. This verifies live generation/storage, not successful Airtable registration or approval.
+- Before that retry, the visitor's hourly allowance produced a labelled starter with confirmed Composio toolkit facts and a direct source link. Retrying after the allowance returned upgraded that starter. Screenshots preserve both states; the starter screenshot is historical.
+- Browser navigation exposed a stale generation screen on repeated starts. Research CTAs now use fresh document navigation; startup requests have a 30-second timeout and a cancellation signal.
+- Deterministic failure checks pass for AI quota, search/extraction throttling, Composio outage, failed repair, starter cooldown/upgrade, busy requests, API-key guidance at zero AI quota, visitor-slot refunds and the actual SSE cancellation handler. These use fixtures and no API credits.
+- Library validation, lint, TypeScript and the production-configured build pass. The public smoke suite passed all 63 library/input views plus evidence references, Markdown, shared pages, caching and invalid requests.
+- The owner selected screenshots instead of video. `/demo` and `docs/walkthrough.md` show the actual guide flow. The home illustration now explains search → choices → guide; the optional provider/Composio diagram appears only beside custom configuration instructions and describes future setup, not an integration this prototype runs.
+
+Generated provider guidance remains unreviewed. In particular, Airtable's registration details, scope classification and approval policy remain among the open questions; the screenshot is not a certification of those requirements.

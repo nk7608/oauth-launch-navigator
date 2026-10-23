@@ -84,6 +84,7 @@ export const Plan = z.object({
     generatedAt: z.string(),
     model: z.string().optional(),
     reviewedBy: z.string().optional(),
+    fallback: z.object({ reason: z.string(), composioChecked: z.boolean() }).optional(),
   }),
 });
 

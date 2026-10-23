@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useSyncExternalStore } from "react";
 import { AlertTriangleIcon, ArrowLeftIcon, BotIcon, ChevronRightIcon, ExternalLinkIcon, FileTextIcon, UserIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { OAuthSetupDiagram } from "@/components/connection-diagram";
 import { SetupBadge } from "@/components/setup-badge";
 import { CopyButton } from "@/components/plan/copy-button";
 import { EvidenceChip, EvidenceList } from "@/components/plan/evidence";
@@ -76,7 +77,7 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">{plan.app.name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            {plan.composio.toolkitExists ? <SetupBadge type={setupType(plan.composio)} /> : <span>Not in Composio</span>}
+            {plan.meta.fallback && !plan.meta.fallback.composioChecked ? <span>Composio support unknown</span> : plan.composio.toolkitExists ? <SetupBadge type={setupType(plan.composio)} /> : <span>Not in Composio</span>}
             {plan.app.category && <span>{plan.app.category}</span>}
           </div>
         </div>
@@ -113,6 +114,15 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
       </aside>
 
       <article className="min-w-0 space-y-10">
+        {plan.meta.fallback && (
+          <section className="rounded-lg border border-wait/40 bg-wait-soft p-4 text-sm" aria-label="Starter plan">
+            <h2 className="font-semibold">Starter plan · full research incomplete</h2>
+            <p className="mt-2">{plan.meta.fallback.reason}</p>
+            <p className="mt-2 text-muted-foreground">Only available facts and source links are included. Scopes and approval requirements remain unknown.</p>
+            {plan.evidence[0]?.url && <a href={plan.evidence[0].url} target="_blank" rel="noreferrer" className="mt-3 mr-5 inline-block text-primary underline">Open available source ↗</a>}
+            <a href={`/generate?q=${encodeURIComponent(plan.app.website ?? plan.app.name)}&retry=1`} className="mt-3 inline-block text-primary underline">Retry full research later</a>
+          </section>
+        )}
         <header className="space-y-5">
           <span className={cn("inline-flex rounded-full px-2.5 py-1 text-sm font-medium", SCENARIO_TONE[view.scenario])}>
             {SCENARIO_LABEL[view.scenario]}
@@ -153,13 +163,13 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
                 <li key={u}>{u}</li>
               ))}
             </ul>
-            <p className="mt-3 text-sm text-muted-foreground">
+            {!plan.composio.toolkitExists && <p className="mt-3 text-sm text-muted-foreground">
               If this app is real and Composio doesn&apos;t support it yet, you can{" "}
               <a href={REQUEST_BOARD_URL} target="_blank" rel="noreferrer" className="text-primary underline">
                 request it from Composio
               </a>
               .
-            </p>
+            </p>}
           </section>
         ) : (
           <PhasePath view={view} />
@@ -183,6 +193,12 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
             return (
               <div key={phase.id} id={`phase-${phase.id}`}>
                 <h3 className="mb-3 text-sm font-semibold text-muted-foreground">{phase.label}</h3>
+                {phase.id === "connect_composio" && !plan.meta.fallback && plan.composio.toolkitExists && view.scenario !== "A_ready_to_use" && plan.composio.authSchemes.some((scheme) => scheme === "OAUTH2" || scheme === "OAUTH1") && (
+                  <details className="mb-4 rounded-lg border p-4 text-sm">
+                    <summary className="cursor-pointer font-medium">What these connection steps would set up</summary>
+                    <div className="mt-3"><OAuthSetupDiagram /></div>
+                  </details>
+                )}
                 <ol className="space-y-3">
                   {steps.map((s) => (
                     <StepRow key={s.id} step={s} view={view} done={done.has(s.id)} onToggle={() => done.toggle(s.id)} />

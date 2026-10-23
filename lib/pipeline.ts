@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { OAUTH_SCHEMES, resolveApp } from "@/lib/apps";
 import { findToolkit, toolkitDoc, type ToolkitFacts } from "@/lib/composio";
-import { complete, parseJsonReply, QuotaError } from "@/lib/llm";
+import { complete, parseJsonReply } from "@/lib/llm";
 import type { Plan } from "@/lib/plan-schema";
 import { research, type Source } from "@/lib/research";
 import { COMPOSIO_EVIDENCE, REQUEST_BOARD_URL, authPhrase, computeScenarioByInput, type PlanEvidence, type PlanStep } from "@/lib/rules";
@@ -33,7 +33,7 @@ export function slugify(s: string) {
   return s.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\.[a-z]{2,}(\/.*)?$/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "app";
 }
 
-type Identified = { name: string; slug: string; website?: string; domain?: string; category?: string; libraryMatch: boolean };
+export type Identified = { name: string; slug: string; website?: string; domain?: string; category?: string; libraryMatch: boolean };
 
 export function identify(query: string): Identified {
   const q = query.trim();
@@ -304,7 +304,7 @@ export function insufficientPlan(app: Identified, facts: ToolkitFacts, checked: 
 
 export type RunResult = { plan: Plan; sources: Source[] };
 
-/** Runs all five stages, emitting progress. Throws QuotaError when the free model quota is gone. */
+/** Runs all five stages; provider failures preserve a clearly labelled starter. */
 export async function runPipeline(query: string, emit: (e: PipelineEvent) => void, signal: AbortSignal): Promise<RunResult> {
   // 1. Identify (code only)
   emit({ type: "stage", stage: "identify", status: "running" });
@@ -318,7 +318,13 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
 
   // 2. Composio facts
   emit({ type: "stage", stage: "composio", status: "running" });
-  const facts = await findToolkit(app.libraryMatch ? app.slug : app.name, signal);
+  let facts: ToolkitFacts;
+  try {
+    facts = await findToolkit(app.libraryMatch ? app.slug : app.name, signal);
+  } catch (error) {
+    if (signal.aborted) throw error;
+    return { plan: starterPlan(query, "Composio could not be checked right now."), sources: [] };
+  }
   if (facts.toolkitExists && !app.libraryMatch && facts.name) app.name = facts.name;
   if (!app.domain && facts.appUrl) {
     try {
@@ -360,7 +366,14 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
 
   // 3. Retrieval
   emit({ type: "stage", stage: "search", status: "running" });
-  const found = await research(app.name, { providerDomain: app.domain, signal });
+  let found: Awaited<ReturnType<typeof research>>;
+  try {
+    found = await research(app.name, { providerDomain: app.domain, signal });
+  } catch (error) {
+    if (signal.aborted) throw error;
+    emit({ type: "stage", stage: "search", status: "skipped", detail: "Search is unavailable; keeping confirmed facts." });
+    return { plan: starterPlan(query, "Live search is unavailable or its allowance is used up.", facts), sources: [] };
+  }
   const composioDoc = facts.toolkitSlug ? await toolkitDoc(facts.toolkitSlug, signal) : undefined;
   const sources: Source[] = [...found.sources];
   if (composioDoc) sources.push({ ...composioDoc, id: `S${sources.length + 1}` });
@@ -383,8 +396,16 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
     { role: "system" as const, content: systemPrompt() },
     { role: "user" as const, content: userPrompt(app, facts, sources) },
   ];
-  const first = await complete(messages, { json: true, signal });
-  let raw = assemble(parseJsonReply(first.content) as Record<string, unknown>, app, facts, first.model);
+  let first: Awaited<ReturnType<typeof complete>>;
+  let raw: Draft;
+  try {
+    first = await complete(messages, { json: true, signal });
+    raw = assemble(parseJsonReply(first.content) as Record<string, unknown>, app, facts, first.model);
+  } catch (error) {
+    if (signal.aborted) throw error;
+    emit({ type: "stage", stage: "build", status: "skipped", detail: "AI is unavailable; saving the sources and confirmed facts." });
+    return { plan: starterPlan(query, "AI is unavailable or its free allowance is used up.", facts, sources), sources };
+  }
   if (!facts.toolkitExists) addToolkitRequest(raw, app);
   emit({ type: "stage", stage: "build", status: "done", detail: `Built with ${first.model}` });
 
@@ -411,8 +432,8 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
         raw = next;
         result = nextResult;
       }
-    } catch (e) {
-      if (e instanceof QuotaError) throw e;
+    } catch {
+      // Keep the first draft and sanitize it below if repair is unavailable.
     }
   }
   if (!result.ok) {
@@ -427,4 +448,43 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
     detail: plan.meta.status === "partial" ? "Some claims couldn't be tied to a source and are marked Unknown" : "Every claim cites a retrieved source",
   });
   return { plan, sources };
+}
+
+/** A no-AI fallback. Negative placeholders are explicitly unconfirmed when no API/catalog facts exist. */
+export function starterPlan(query: string, reason: string, facts?: ToolkitFacts, sources: Source[] = []): Plan {
+  const app = identify(query);
+  const catalog = resolveApp(query);
+  const confirmed = facts ?? (catalog ? {
+    toolkitExists: true, toolkitSlug: catalog.slug, authSchemes: catalog.authSchemes,
+    managedAppAvailable: catalog.managedAppAvailable,
+  } : undefined);
+  const evidence: PlanEvidence[] = confirmed?.toolkitExists ? [{
+    id: "f1", label: "official", checkedAt: facts ? today() : "2026-10-22",
+    claim: `Composio lists ${confirmed.authSchemes.join(", ") || "no authentication scheme"}; managed OAuth app: ${confirmed.managedAppAvailable ? "available" : "not listed"}.${facts ? " Checked through the API." : " From the catalog snapshot; recheck before setup."}`,
+    sourceTitle: "Composio toolkit", url: `https://docs.composio.dev/toolkits/${confirmed.toolkitSlug}`,
+  }] : [];
+  if (confirmed?.toolkitExists && facts?.redirectUri) evidence.push({
+    id: "f2", label: "official", checkedAt: today(), claim: `The Composio API lists this redirect URI: ${facts.redirectUri}. Confirm it in your auth config before using it.`,
+    sourceTitle: "Composio toolkit configuration", url: `https://docs.composio.dev/toolkits/${facts.toolkitSlug}`,
+  });
+  if (!sources.length && app.website) evidence.push({
+    id: "w1", label: "unknown", checkedAt: today(), claim: "App website; its developer requirements have not been checked.", sourceTitle: `${app.name} website`, url: app.website,
+  });
+  for (const [i, source] of sources.entries()) evidence.push({
+    id: `r${i + 1}`, label: "unknown", checkedAt: today(), claim: "Retrieved for this app; the requirements have not been synthesized or verified.",
+    sourceTitle: source.title, url: source.url,
+  });
+  const plan: Plan = {
+    app: { name: app.name, slug: app.slug, website: app.website, category: app.category },
+    composio: { toolkitExists: confirmed?.toolkitExists ?? false, toolkitSlug: confirmed?.toolkitSlug,
+      authSchemes: confirmed?.authSchemes ?? [], managedAppAvailable: confirmed?.managedAppAvailable ?? false },
+    scenarioByInput: {},
+    summary: { setupEffort: "Unknown", waitOfficial: "Unknown", gatekeepers: [],
+      nextAction: confirmed?.toolkitExists ? `Open the Composio toolkit source below and check its authentication setup. Retry full research when the allowance resets.` : `Check the app name or website, then retry full research later. Composio support is not confirmed.` },
+    scopes: [], steps: [], evidence,
+    unknowns: [reason, ...(confirmed ? [confirmed.toolkitExists ? `Composio authentication: ${confirmed.authSchemes.join(", ") || "not listed"}; managed OAuth app ${confirmed.managedAppAvailable ? "available" : "not listed"}.` : "No matching toolkit was found in the Composio API."] : ["Composio support was not checked. Empty authentication fields do not establish that the app is unsupported."]),
+      "Provider registration steps, required scopes, approvals, effort and wait times have not been researched."],
+    meta: { status: "partial", generatedAt: today(), model: "rules (no AI synthesis)", fallback: { reason, composioChecked: !!confirmed } },
+  };
+  return finalize(plan);
 }

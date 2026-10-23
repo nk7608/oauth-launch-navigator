@@ -11,6 +11,7 @@ export type RunRecord = {
   status: "pending" | "running" | "done" | "failed" | "cancelled";
   createdAt: number;
   heartbeat?: number;
+  visitorSlot?: { visitor: string; at: number };
   error?: Extract<PipelineEvent, { type: "error" }>;
   planStatus?: StoredPlan["plan"]["meta"]["status"];
 };
@@ -26,8 +27,8 @@ export const saveRun = (run: RunRecord) => store.set(`runs/${run.id}.json`, run)
 export const getStoredPlan = (slug: string) => store.get<StoredPlan>(`plans/${slug}.json`);
 export const savePlan = (slug: string, value: StoredPlan) => store.set(`plans/${slug}.json`, value);
 
-export async function createRun(query: string, slug: string): Promise<RunRecord> {
-  const run: RunRecord = { id: randomUUID(), query, slug, status: "pending", createdAt: Date.now() };
+export async function createRun(query: string, slug: string, visitorSlot?: RunRecord["visitorSlot"]): Promise<RunRecord> {
+  const run: RunRecord = { id: randomUUID(), query, slug, status: "pending", createdAt: Date.now(), visitorSlot };
   await saveRun(run);
   return run;
 }
@@ -66,12 +67,23 @@ export function visitorId(headers: Headers) {
 }
 
 /** True if the visitor may start another run; records the run when allowed. */
-export async function takeVisitorSlot(visitor: string): Promise<{ ok: boolean; retryInMin?: number }> {
+export async function takeVisitorSlot(visitor: string): Promise<{ ok: boolean; at?: number; retryInMin?: number }> {
   const key = `limits/${visitor}.json`;
   const hourAgo = Date.now() - 3_600_000;
   const times = ((await store.get<number[]>(key)) ?? []).filter((t) => t > hourAgo);
   if (times.length >= VISITOR_RUNS_PER_HOUR) return { ok: false, retryInMin: Math.ceil((times[0] + 3_600_000 - Date.now()) / 60_000) };
-  times.push(Date.now());
+  const at = Date.now();
+  times.push(at);
   await store.set(key, times);
-  return { ok: true };
+  return { ok: true, at };
+}
+
+/** Refund failed/cancelled attempts; successful full research keeps its reservation. */
+export async function releaseVisitorSlot(slot: RunRecord["visitorSlot"]) {
+  if (!slot) return;
+  const key = `limits/${slot.visitor}.json`;
+  const times = (await store.get<number[]>(key)) ?? [];
+  const index = times.indexOf(slot.at);
+  if (index >= 0) times.splice(index, 1);
+  await store.set(key, times);
 }

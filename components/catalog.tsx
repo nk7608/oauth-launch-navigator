@@ -47,9 +47,9 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
   const generateHref = `/generate?q=${encodeURIComponent(query.trim())}`;
 
   function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!query.trim()) return;
-    router.push(exact ? `/plan/${exact.slug}` : generateHref);
+    if (!query.trim()) { e.preventDefault(); return; }
+    if (exact) { e.preventDefault(); router.push(`/plan/${exact.slug}`); }
+    // A native GET navigation starts a fresh research screen instead of restoring Activity state.
   }
 
   const counts = (value: SetupFilter) =>
@@ -57,7 +57,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
 
   return (
     <div className="space-y-8">
-      <form onSubmit={onSubmit} role="search">
+      <form action="/generate" method="get" onSubmit={onSubmit} role="search">
         <label htmlFor="app-search" className="mb-2 block text-sm font-medium">
           Which app are you connecting?
         </label>
@@ -65,6 +65,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             id="app-search"
+            name="q"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Name or website, like Gmail or pipedrive.com"
@@ -106,7 +107,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
       </div>
 
       {query.trim() && !exact && (
-        <Link
+        <a
           href={generateHref}
           className="flex items-start gap-3 rounded-lg border border-dashed border-primary/40 bg-own-soft p-4 transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-ring"
         >
@@ -119,7 +120,7 @@ export function Catalog({ statuses }: { statuses: Record<string, GuideStatus> })
               An agent checks Composio and the provider&apos;s docs, then builds a sourced plan. Takes about 2 minutes.
             </span>
           </span>
-        </Link>
+        </a>
       )}
 
       <div className="space-y-8" aria-live="polite">

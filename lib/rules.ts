@@ -186,7 +186,7 @@ const VERDICT: Record<Scenario, (p: Plan, ctx: { reason?: string; gatekeeper: st
   F_not_oauth: (p) => `${p.app.name} connects with ${authPhrase(p.composio.authSchemes)}, not OAuth, so there's no app to register or review.`,
   G_not_in_composio: (p, c) =>
     `Composio doesn't support ${p.app.name} yet. You can still set up the provider side now and request the toolkit from Composio.${accessNote(p, c)}`,
-  H_insufficient_info: (p) => `We couldn't find enough reliable information to build a plan for ${p.app.name}.`,
+  H_insufficient_info: (p) => p.meta.fallback ? `Full research for ${p.app.name} is incomplete. This starter keeps the facts and sources available so far.` : `We couldn't find enough reliable information to build a plan for ${p.app.name}.`,
 };
 
 const AUTH_PHRASE: Record<string, string> = {

@@ -14,7 +14,8 @@
     "check-deploy": "node --import tsx scripts/check-deploy.ts",
     "sync-apps": "node scripts/sync-apps.mjs",
     "check-keys": "bash scripts/check-keys.sh",
-    "smoke": "node --import tsx scripts/smoke.ts"
+    "smoke": "node --import tsx scripts/smoke.ts",
+    "test:fallback": "node --conditions=react-server --import tsx scripts/test-fallback.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

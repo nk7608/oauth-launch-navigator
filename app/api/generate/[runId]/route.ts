@@ -3,7 +3,7 @@
 import type { NextRequest } from "next/server";
 import { QuotaError } from "@/lib/llm";
 import { runPipeline, type PipelineEvent } from "@/lib/pipeline";
-import { RUN_CAP_MS, activeRunFor, clearActive, getRun, markActive, saveRun, savePlan } from "@/lib/runs";
+import { RUN_CAP_MS, activeRunFor, clearActive, getRun, markActive, releaseVisitorSlot, saveRun, savePlan } from "@/lib/runs";
 
 export const maxDuration = 300;
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/generate
 
       try {
         if (run.status === "done") return send({ type: "done", slug: run.slug, status: run.planStatus ?? "generated" });
-        if (run.status === "failed" && run.error) return send(run.error);
+        if (run.status === "failed" || run.status === "cancelled") return send(run.error ?? { type: "error", code: "cancelled", message: "This run has stopped. Start a new attempt." });
 
         // Another stream already owns this app's run (second tab, refresh, or joined run): wait for it.
         const active = await activeRunFor(run.slug);
@@ -63,6 +63,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/generate
             query: run.query,
             createdAt: new Date().toISOString(),
           });
+          if (plan.meta.fallback) await releaseVisitorSlot(run.visitorSlot);
           await saveRun({ ...run, status: "done", planStatus: plan.meta.status });
           send({ type: "done", slug: run.slug, status: plan.meta.status });
         } catch (err) {
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/generate
                 : signal.aborted
                   ? { type: "error", code: "failed", message: "Research took longer than 4 minutes and was stopped. Try again later." }
                   : { type: "error", code: "failed", message: err instanceof Error ? err.message : "Something went wrong." };
+          await releaseVisitorSlot(run.visitorSlot);
           await saveRun({ ...run, status: error.code === "cancelled" ? "cancelled" : "failed", error });
           send(error);
         } finally {
