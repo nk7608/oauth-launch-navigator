@@ -2,6 +2,22 @@
 
 Status as of 2026-10-23. Read this file, `CLAUDE.md` (the brief) and `.claude/skills/oauth-guide-research/SKILL.md` before continuing.
 
+## Latest continuation: 2026-10-23 (Codex)
+
+- Added Outlook, Notion and Trello library guides; all seven guides validate. Each new guide is in a separate local commit. Status remains `generated`; owner review is still pending.
+- Added `/verification`: all six pre-existing Tested findings, source-only coverage, guide statuses, unknowns and validator rules. Reference guides no longer imply completed owner review.
+- Completed README and added DEPLOYMENT.md with the proposed project/store, environment setup and production acceptance checklist.
+- Corrected the OpenRouter precheck: `limit_remaining` is monetary, while `free_model_daily_requests.remaining` is the request quota. Both configured models are still available with JSON support and zero pricing.
+- Added local/production `check-deploy`, a missing-Blob runtime guard, Vercel build settings and upload exclusions. Build traces were verified to exclude `.data/` and `.env*`; all seven guides and the live research skill/schema remain included.
+- Added `npm run smoke -- <origin>`: all 63 guide/input combinations, evidence references, Gmail assessment filtering, Notion scopes, Markdown/shared pages, cache/invalid input and quota/config guards. It starts no live research.
+- Passed: production build (108 generated pages), lint, all seven guide validations, local configuration check, all smoke checks. Browser: Gmail read→write removes the assessment; step 4 copies its Markdown; share copies the selected URL; verification page renders correctly.
+- Production preflight intentionally fails until `BLOB_READ_WRITE_TOKEN` is configured. No deployment, Blob store, GitHub repository or push has been created. J1–J8 on production and the timed demo remain pending.
+- Checked the signed-in Vercel Hobby team `nk7608s-projects`: project search for `oauth` returned no results; Storage showed no existing stores. No `.vercel` link or Git remote exists locally. User was unsure whether Claude deployed, so this was checked directly.
+- Keys work. Quota observed during this continuation: OpenRouter **47/50 free requests** remaining today; Tavily **993/1000 credits** remaining this month. These counters change. Firecrawl connector is out of credits; official sources were read with web tools instead, so no top-up was needed.
+- Local production preview: `http://localhost:3100` (started with `npm start -- --port 3100`); screenshot `/tmp/oauth-launch-verification.jpg`.
+
+Next: show the completed local app and request owner approval for the resources listed in DEPLOYMENT.md. Prefer a direct Vercel CLI deployment to avoid requesting a GitHub push solely for deployment. Never print keys. After approval, configure the private store/environment, deploy and run the production checklist. Do not label production journeys passed before running them.
+
 ## 1. Where things stand
 
 | Build step (CLAUDE.md §10) | Status |
@@ -13,10 +29,10 @@ Status as of 2026-10-23. Read this file, `CLAUDE.md` (the brief) and `.claude/sk
 | 4. Library guides: GitHub, Slack, Pipedrive (+ Gmail reference) | Done, committed; waiting for Nayana's review |
 | 5. Live pipeline + generating state + quota handling | Done, committed |
 | 6. Real setup attempts (GitHub, Google/Gmail, Composio Playground) | Done, committed as Tested evidence |
-| 7. More library guides | **Not started in files.** Research notes for Outlook, Notion and Trello are in §9 |
-| 8. `/verification` page, README, Vercel deploy, J1–J8 on prod | **Not started** |
+| 7. More library guides | Done: Outlook, Notion, Trello; sourced, validated, committed |
+| 8. `/verification` page, README, Vercel deploy, J1–J8 on prod | Local page/docs/checks done; deployment and production journeys pending approval |
 
-Git: 5 local commits on `main`, nothing pushed, no remote. `.env.local` and `.data/` are git-ignored.
+Git: work remains on local `main`, nothing pushed, no remote. `.env.local` and `.data/` are git-ignored.
 
 ## 2. Run it locally
 
@@ -131,7 +147,7 @@ Live plans already generated in `.data/plans/`: algolia (F), hubspot, rippling (
 
 ## 9. Remaining work, with everything needed to finish
 
-### 9a. Three more library guides (step 7)
+### 9a. Three more library guides (step 7 — completed; original notes below)
 Write `data/guides/<slug>.json` in the same shape as `github.json`, then `npm run validate -- --fix-scenarios`, commit separately. Facts already gathered (all URLs return 200):
 
 **Outlook** (`outlook`; Composio: OAUTH2 + S2S_OAUTH2, managed OAuth yes; redirect as above; default scopes include Calendars/Contacts/Chat/Mail/MailboxSettings + offline_access)
@@ -151,10 +167,10 @@ Write `data/guides/<slug>.json` in the same shape as `github.json`, then `npm ru
 - OAuth 1.0 endpoints `https://trello.com/1/OAuthGetRequestToken`, `/1/OAuthAuthorizeToken`, `/1/OAuthGetAccessToken`; the API key is tied to a Power-Up: trello.com/apps/admin → your Power-Up → Trello Auth → Generate a new API Key; scopes read/write/account; token expiration 1hour/1day/30days/never. https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/
 - Unknown: the callback/allowed-origins setup for Composio's redirect with OAuth 1.0.
 
-### 9b. README (step 8)
+### 9b. README (step 8 — completed)
 Fill "Key decisions · Limitations · Verification" in `README.md` from §4, §6, §7 and §8 here. Include the model choice and its numbers (CLAUDE.md §12 asks for it), the free-tier limits, "share links are unlisted but public", and the roadmap (CLAUDE.md §13).
 
-### 9c. `/verification` page (step 8)
+### 9c. `/verification` page (step 8 — completed)
 A simple static page listing what was Tested (§7, with dates), what's sourced-only, guide statuses, and validator rules. It can read `data/guides/*.json` and show every `tested` evidence item.
 
 ### 9d. Deploy to Vercel (step 8; ask Nayana before creating anything)
@@ -172,4 +188,4 @@ A simple static page listing what was Tested (§7, with dates), what's sourced-o
 
 ## 10. Prompt to continue in a new session
 
-> Read HANDOFF.md, CLAUDE.md and the oauth-guide-research skill. Continue from HANDOFF §9: write the Outlook, Notion and Trello guides from the notes in §9a (validate and commit each), then the README and the /verification page. Then prepare the Vercel deploy and ask me before creating anything in Vercel. Commit after each verified step; don't push without asking.
+> Read the latest-continuation section in HANDOFF.md and DEPLOYMENT.md. Local guides, verification page, README and checks are complete. Review existing user authorization before asking again; if deployment is not yet approved, show the local result and ask before creating the proposed Vercel project/private Blob store. Then configure the existing local service keys securely, deploy, and run the production acceptance checklist. Never print keys or push without authorization.
