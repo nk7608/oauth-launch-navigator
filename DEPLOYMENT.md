@@ -24,6 +24,6 @@ Then open Gmail, change Read to Write, copy/share the selected view, and researc
 
 ## Submission deployment
 
-The owner's existing Vercel project uses a connected private Blob store and server-side secrets. Updates were deployed through the CLI; the public GitHub repository is the source submission. Automatic GitHub deployments are not required for this setup.
+The owner's Vercel project uses a connected private Blob store and server-side secrets, and is connected to this GitHub repository: every push to `main` deploys to production, and other branches get preview deployments. `npx vercel deploy --prod` from a linked checkout still works for manual deploys.
 
 No paid upgrade is needed to run the demonstrated slice. Provider free allowances, Vercel usage and Blob storage still have limits. The IP counter and active-run index are best effort, not atomic abuse controls.
