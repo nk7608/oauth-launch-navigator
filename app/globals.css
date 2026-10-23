@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-heading: var(--font-plex-sans);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-wait: var(--wait);
+  --color-wait-soft: var(--wait-soft);
+  --color-own: var(--own);
+  --color-own-soft: var(--own-soft);
+  --color-ev-official: var(--ev-official);
+  --color-ev-reported: var(--ev-reported);
+  --color-ev-tested: var(--ev-tested);
+  --color-ev-inferred: var(--ev-inferred);
+  --color-ev-unknown: var(--ev-unknown);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Cool paper + ink. Colour carries meaning: ok = ready, wait = review/waiting, own = your own app. */
+:root {
+  --background: #fbfcfd;
+  --foreground: #141a24;
+  --card: #ffffff;
+  --card-foreground: #141a24;
+  --popover: #ffffff;
+  --popover-foreground: #141a24;
+  --primary: #1f43c9;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f6;
+  --secondary-foreground: #141a24;
+  --muted: #f1f3f7;
+  --muted-foreground: #556070;
+  --accent: #eef1f6;
+  --accent-foreground: #141a24;
+  --destructive: #b42318;
+  --border: #e1e5ec;
+  --input: #d5dbe4;
+  --ring: #1f43c9;
+  --radius: 0.5rem;
+  --ok: #13703a;
+  --ok-soft: #e6f4ec;
+  --wait: #9a5200;
+  --wait-soft: #fdf1e1;
+  --own: #1f43c9;
+  --own-soft: #e9eefc;
+  --ev-official: #0e6b63;
+  --ev-reported: #9a5200;
+  --ev-tested: #6b2fc7;
+  --ev-inferred: #4b5565;
+  --ev-unknown: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #10141b;
+    --foreground: #e8ecf2;
+    --card: #161b24;
+    --card-foreground: #e8ecf2;
+    --popover: #161b24;
+    --popover-foreground: #e8ecf2;
+    --primary: #8aa4ff;
+    --primary-foreground: #0d1220;
+    --secondary: #1f2633;
+    --secondary-foreground: #e8ecf2;
+    --muted: #1b212c;
+    --muted-foreground: #9aa5b5;
+    --accent: #1f2633;
+    --accent-foreground: #e8ecf2;
+    --destructive: #f97066;
+    --border: #2a3240;
+    --input: #333c4c;
+    --ring: #8aa4ff;
+    --ok: #5fd08f;
+    --ok-soft: #13291d;
+    --wait: #f2b25c;
+    --wait-soft: #2d2212;
+    --own: #8aa4ff;
+    --own-soft: #1a2240;
+    --ev-official: #4fd1c1;
+    --ev-reported: #f2b25c;
+    --ev-tested: #c4a2ff;
+    --ev-inferred: #b0b9c6;
+    --ev-unknown: #9aa5b5;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

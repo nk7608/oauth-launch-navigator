@@ -1,0 +1,69 @@
+{
+ "_note": "Golden checks run by lib/validate.ts (npm run validate). Facts with an assert are checked by path; the rest are generic rules in code.",
+ "facts": [
+  {
+   "app": "gmail",
+   "check": "scope https://www.googleapis.com/auth/gmail.send has tier 'sensitive'",
+   "source": "https://docs.composio.dev/kb/guide/toolkits-gmail",
+   "assert": {
+    "path": "scopes[scope=https://www.googleapis.com/auth/gmail.send].tier",
+    "equals": "sensitive"
+   }
+  },
+  {
+   "app": "gmail",
+   "check": "scenarioByInput['read|customers'] == 'D_review_required'",
+   "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "assert": {
+    "path": "scenarioByInput.read|customers",
+    "equals": "D_review_required"
+   }
+  },
+  {
+   "app": "gmail",
+   "check": "composio.managedAppAvailable == true",
+   "source": "Composio API GET /toolkits/gmail",
+   "assert": {
+    "path": "composio.managedAppAvailable",
+    "equals": true
+   }
+  },
+  {
+   "app": "pipedrive",
+   "check": "composio.managedAppAvailable == false (scenario C for production)",
+   "source": "Composio API GET /toolkits/pipedrive",
+   "assert": {
+    "path": "composio.managedAppAvailable",
+    "equals": false
+   }
+  },
+  {
+   "app": "trello",
+   "check": "composio.authSchemes includes OAUTH1",
+   "source": "Composio API GET /toolkits/trello",
+   "assert": {
+    "path": "composio.authSchemes",
+    "includes": "OAUTH1"
+   }
+  },
+  {
+   "app": "algolia",
+   "check": "no OAuth scheme → scenario F",
+   "source": "Composio API GET /toolkits/algolia",
+   "assert": {
+    "path": "scenarioByInput.both|customers",
+    "equals": "F_not_oauth"
+   }
+  },
+  {
+   "app": "*",
+   "check": "every step/scope cites an existing evidence id",
+   "source": "lib/plan-schema.ts rules"
+  },
+  {
+   "app": "*",
+   "check": "no wait/cost estimate without evidence",
+   "source": "research skill"
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+/build
+/coverage
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# env files: real keys stay local; .env.example is committed
+.env
+.env*.local
+
+# local data store for live plans (dev only)
+/.data/
+
+# vercel
+.vercel

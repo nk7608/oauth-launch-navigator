@@ -1,0 +1,1788 @@
+{
+ "_source": "Composio API v3.1 GET /toolkits (live), synced 2026-10-22 by scripts/sync-apps.mjs. Categories are ours.",
+ "_counts": {
+  "total": 100,
+  "managed": 67,
+  "ownAppRequired": 33,
+  "notOauth": 0,
+  "notInComposio": 0,
+  "composioToolkitsTotal": 1636
+ },
+ "apps": [
+  {
+   "slug": "googledrive",
+   "name": "Google Drive",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 92,
+   "website": "https://drive.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "googledocs",
+   "name": "Google Docs",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 46,
+   "website": "https://docs.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "googlesheets",
+   "name": "Google Sheets",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 50,
+   "website": "https://sheets.google.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "googleslides",
+   "name": "Google Slides",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 7,
+   "website": "https://docs.google.com/presentation",
+   "inComposio": true
+  },
+  {
+   "slug": "googleforms",
+   "name": "Google Forms",
+   "category": "Productivity & Files",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 10,
+   "website": "https://forms.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "notion",
+   "name": "Notion",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 57,
+   "website": "https://www.notion.so",
+   "inComposio": true
+  },
+  {
+   "slug": "confluence",
+   "name": "Confluence",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 70,
+   "website": "https://www.atlassian.com/software/confluence",
+   "inComposio": true
+  },
+  {
+   "slug": "dropbox",
+   "name": "Dropbox",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 175,
+   "website": "https://www.dropbox.com",
+   "inComposio": true
+  },
+  {
+   "slug": "box",
+   "name": "Box",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 284,
+   "website": "https://www.box.com",
+   "inComposio": true
+  },
+  {
+   "slug": "one_drive",
+   "name": "OneDrive",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 93,
+   "website": "https://www.microsoft.com/en-in/microsoft-365/onedrive/online-cloud-storage/",
+   "inComposio": true
+  },
+  {
+   "slug": "share_point",
+   "name": "SharePoint",
+   "category": "Productivity & Files",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 124,
+   "website": "https://www.microsoft.com/en-in/microsoft-365/sharepoint/collaboration/",
+   "inComposio": true
+  },
+  {
+   "slug": "gmail",
+   "name": "Gmail",
+   "category": "Email & Calendar",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "reference",
+   "plannedVerified": true,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 61,
+   "website": "https://mail.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "outlook",
+   "name": "Outlook",
+   "category": "Email & Calendar",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 309,
+   "website": "https://www.microsoft.com/en-in/microsoft-365/outlook/email-and-calendar-software-microsoft-outlook",
+   "inComposio": true
+  },
+  {
+   "slug": "googlecalendar",
+   "name": "Google Calendar",
+   "category": "Email & Calendar",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 47,
+   "website": "https://calendar.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "googlecontacts",
+   "name": "Google Contacts",
+   "category": "Email & Calendar",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 24,
+   "website": "https://contacts.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "calendly",
+   "name": "Calendly",
+   "category": "Email & Calendar",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 53,
+   "website": "https://calendly.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "cal",
+   "name": "Cal.com",
+   "category": "Email & Calendar",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 168,
+   "website": "https://cal.com",
+   "inComposio": true
+  },
+  {
+   "slug": "slack",
+   "name": "Slack",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": true,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 162,
+   "website": "https://slack.com/intl/en-in//",
+   "inComposio": true
+  },
+  {
+   "slug": "microsoft_teams",
+   "name": "Microsoft Teams",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 180,
+   "website": "https://www.microsoft.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "discord",
+   "name": "Discord",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 23,
+   "website": "https://composio.dev",
+   "inComposio": true
+  },
+  {
+   "slug": "whatsapp",
+   "name": "WhatsApp",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 58,
+   "website": "https://web.whatsapp.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "zoom",
+   "name": "Zoom",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 90,
+   "website": "https://www.zoom.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "googlemeet",
+   "name": "Google Meet",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 15,
+   "website": "https://meet.google.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "dialpad",
+   "name": "Dialpad",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 192,
+   "website": "https://www.dialpad.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "gong",
+   "name": "Gong",
+   "category": "Communication & Meetings",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "BASIC",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 57,
+   "website": "https://www.gong.io",
+   "inComposio": true
+  },
+  {
+   "slug": "github",
+   "name": "GitHub",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": true,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 877,
+   "website": "https://github.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "gitlab",
+   "name": "GitLab",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 123,
+   "website": "https://about.gitlab.com",
+   "inComposio": true
+  },
+  {
+   "slug": "bitbucket",
+   "name": "Bitbucket",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 116,
+   "website": "https://bitbucket.org/",
+   "inComposio": true
+  },
+  {
+   "slug": "sentry",
+   "name": "Sentry",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 209,
+   "website": "https://sentry.io/welcome/",
+   "inComposio": true
+  },
+  {
+   "slug": "pagerduty",
+   "name": "PagerDuty",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 356,
+   "website": "https://www.pagerduty.com",
+   "inComposio": true
+  },
+  {
+   "slug": "datadog",
+   "name": "Datadog",
+   "category": "Developer & Data",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY",
+    "BEARER_TOKEN"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 75,
+   "website": "https://www.datadoghq.com",
+   "inComposio": true
+  },
+  {
+   "slug": "supabase",
+   "name": "Supabase",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 126,
+   "website": "https://supabase.com",
+   "inComposio": true
+  },
+  {
+   "slug": "databricks",
+   "name": "Databricks",
+   "category": "Developer & Data",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 410,
+   "website": "https://www.databricks.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "snowflake",
+   "name": "Snowflake",
+   "category": "Developer & Data",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 16,
+   "website": "https://www.snowflake.com/en/",
+   "inComposio": true
+  },
+  {
+   "slug": "hugging_face",
+   "name": "Hugging Face",
+   "category": "Developer & Data",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 135,
+   "website": "https://huggingface.co/",
+   "inComposio": true
+  },
+  {
+   "slug": "jira",
+   "name": "Jira",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 98,
+   "website": "https://www.atlassian.com/software/jira",
+   "inComposio": true
+  },
+  {
+   "slug": "linear",
+   "name": "Linear",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 47,
+   "website": "https://linear.app",
+   "inComposio": true
+  },
+  {
+   "slug": "asana",
+   "name": "Asana",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 157,
+   "website": "https://asana.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "clickup",
+   "name": "ClickUp",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 163,
+   "website": "https://clickup.com",
+   "inComposio": true
+  },
+  {
+   "slug": "monday",
+   "name": "Monday",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 122,
+   "website": "https://monday.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "trello",
+   "name": "Trello",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH1"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH1"
+   ],
+   "noAuth": false,
+   "toolsCount": 324,
+   "website": "https://trello.com",
+   "inComposio": true
+  },
+  {
+   "slug": "wrike",
+   "name": "Wrike",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 144,
+   "website": "https://www.wrike.com",
+   "inComposio": true
+  },
+  {
+   "slug": "todoist",
+   "name": "Todoist",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 76,
+   "website": "https://www.todoist.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "miro",
+   "name": "Miro",
+   "category": "Project Management",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 80,
+   "website": "https://miro.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "figma",
+   "name": "Figma",
+   "category": "Design & Web",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 52,
+   "website": "https://www.figma.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "canva",
+   "name": "Canva",
+   "category": "Design & Web",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 48,
+   "website": "https://www.canva.com",
+   "inComposio": true
+  },
+  {
+   "slug": "mural",
+   "name": "Mural",
+   "category": "Design & Web",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 34,
+   "website": "https://www.mural.co",
+   "inComposio": true
+  },
+  {
+   "slug": "webflow",
+   "name": "Webflow",
+   "category": "Design & Web",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 59,
+   "website": "https://webflow.com",
+   "inComposio": true
+  },
+  {
+   "slug": "salesforce",
+   "name": "Salesforce",
+   "category": "CRM & Sales",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 203,
+   "website": "https://www.salesforce.com/in/",
+   "inComposio": true
+  },
+  {
+   "slug": "hubspot",
+   "name": "HubSpot",
+   "category": "CRM & Sales",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 293,
+   "website": "https://www.hubspot.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "pipedrive",
+   "name": "Pipedrive",
+   "category": "CRM & Sales",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": true,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 403,
+   "website": "https://www.pipedrive.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "attio",
+   "name": "Attio",
+   "category": "CRM & Sales",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 105,
+   "website": "https://attio.com",
+   "inComposio": true
+  },
+  {
+   "slug": "zoho",
+   "name": "Zoho",
+   "category": "CRM & Sales",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 98,
+   "website": "https://www.zoho.com",
+   "inComposio": true
+  },
+  {
+   "slug": "dynamics365",
+   "name": "Dynamics 365",
+   "category": "CRM & Sales",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 16,
+   "website": "https://www.microsoft.com/en-in/",
+   "inComposio": true
+  },
+  {
+   "slug": "kommo",
+   "name": "Kommo",
+   "category": "CRM & Sales",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 53,
+   "website": "https://www.kommo.com",
+   "inComposio": true
+  },
+  {
+   "slug": "follow_up_boss",
+   "name": "Follow Up Boss",
+   "category": "CRM & Sales",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 112,
+   "website": "https://www.followupboss.com",
+   "inComposio": true
+  },
+  {
+   "slug": "zoominfo",
+   "name": "ZoomInfo",
+   "category": "CRM & Sales",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 16,
+   "website": "https://www.zoominfo.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "zendesk",
+   "name": "Zendesk",
+   "category": "Customer Support",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 456,
+   "website": "https://www.zendesk.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "intercom",
+   "name": "Intercom",
+   "category": "Customer Support",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 133,
+   "website": "https://www.intercom.com",
+   "inComposio": true
+  },
+  {
+   "slug": "help_scout",
+   "name": "Help Scout",
+   "category": "Customer Support",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 129,
+   "website": "https://www.helpscout.com",
+   "inComposio": true
+  },
+  {
+   "slug": "gorgias",
+   "name": "Gorgias",
+   "category": "Customer Support",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 44,
+   "website": "https://www.gorgias.com",
+   "inComposio": true
+  },
+  {
+   "slug": "salesforce_service_cloud",
+   "name": "Salesforce Service Cloud",
+   "category": "Customer Support",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 22,
+   "website": "https://www.salesforce.com/service/",
+   "inComposio": true
+  },
+  {
+   "slug": "mailchimp",
+   "name": "Mailchimp",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 274,
+   "website": "https://mailchimp.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "klaviyo",
+   "name": "Klaviyo",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 231,
+   "website": "https://www.klaviyo.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "kit",
+   "name": "Kit",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 42,
+   "website": "https://kit.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "brevo",
+   "name": "Brevo",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 47,
+   "website": "https://www.brevo.com",
+   "inComposio": true
+  },
+  {
+   "slug": "googleads",
+   "name": "Google Ads",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 39,
+   "website": "https://composio.dev",
+   "inComposio": true
+  },
+  {
+   "slug": "metaads",
+   "name": "Meta Ads",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 72,
+   "website": "https://business.meta.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "linkedin_ads",
+   "name": "LinkedIn Ads",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 28,
+   "website": "https://www.linkedin.com/advertising",
+   "inComposio": true
+  },
+  {
+   "slug": "reddit_ads",
+   "name": "Reddit Ads",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 83,
+   "website": "https://ads.reddit.com",
+   "inComposio": true
+  },
+  {
+   "slug": "google_analytics",
+   "name": "Google Analytics",
+   "category": "Marketing & Ads",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 67,
+   "website": "https://analytics.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "linkedin",
+   "name": "LinkedIn",
+   "category": "Social & Content",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 25,
+   "website": "https://linkedin.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "twitter",
+   "name": "X (Twitter)",
+   "category": "Social & Content",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 83,
+   "website": "https://x.com",
+   "inComposio": true
+  },
+  {
+   "slug": "facebook",
+   "name": "Facebook",
+   "category": "Social & Content",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 54,
+   "website": "https://www.facebook.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "instagram",
+   "name": "Instagram",
+   "category": "Social & Content",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 33,
+   "website": "https://www.instagram.com",
+   "inComposio": true
+  },
+  {
+   "slug": "youtube",
+   "name": "YouTube",
+   "category": "Social & Content",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 59,
+   "website": "https://www.youtube.com",
+   "inComposio": true
+  },
+  {
+   "slug": "reddit",
+   "name": "Reddit",
+   "category": "Social & Content",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 34,
+   "website": "https://www.reddit.com",
+   "inComposio": true
+  },
+  {
+   "slug": "tiktok",
+   "name": "TikTok",
+   "category": "Social & Content",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 9,
+   "website": "https://www.tiktok.com",
+   "inComposio": true
+  },
+  {
+   "slug": "snapchat",
+   "name": "Snapchat",
+   "category": "Social & Content",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 140,
+   "website": "https://www.snapchat.com",
+   "inComposio": true
+  },
+  {
+   "slug": "stripe",
+   "name": "Stripe",
+   "category": "Finance & Payments",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 428,
+   "website": "https://stripe.com",
+   "inComposio": true
+  },
+  {
+   "slug": "quickbooks",
+   "name": "QuickBooks",
+   "category": "Finance & Payments",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 114,
+   "website": "https://quickbooks.intuit.com",
+   "inComposio": true
+  },
+  {
+   "slug": "xero",
+   "name": "Xero",
+   "category": "Finance & Payments",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 68,
+   "website": "https://www.xero.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "square",
+   "name": "Square",
+   "category": "Finance & Payments",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 122,
+   "website": "https://squareup.com",
+   "inComposio": true
+  },
+  {
+   "slug": "brex",
+   "name": "Brex",
+   "category": "Finance & Payments",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 84,
+   "website": "https://www.brex.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "ramp",
+   "name": "Ramp",
+   "category": "Finance & Payments",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 111,
+   "website": "https://ramp.com/",
+   "inComposio": true
+  },
+  {
+   "slug": "razorpay",
+   "name": "Razorpay",
+   "category": "Finance & Payments",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 42,
+   "website": "https://razorpay.com",
+   "inComposio": true
+  },
+  {
+   "slug": "freshbooks",
+   "name": "FreshBooks",
+   "category": "Finance & Payments",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 10,
+   "website": "https://www.freshbooks.com/signup",
+   "inComposio": true
+  },
+  {
+   "slug": "netsuite",
+   "name": "NetSuite",
+   "category": "Finance & Payments",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 85,
+   "website": "https://www.netsuite.com",
+   "inComposio": true
+  },
+  {
+   "slug": "gusto",
+   "name": "Gusto",
+   "category": "HR & Recruiting",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 192,
+   "website": "https://gusto.com",
+   "inComposio": true
+  },
+  {
+   "slug": "bamboohr",
+   "name": "BambooHR",
+   "category": "HR & Recruiting",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 42,
+   "website": "https://www.bamboohr.com",
+   "inComposio": true
+  },
+  {
+   "slug": "lever",
+   "name": "Lever",
+   "category": "HR & Recruiting",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 64,
+   "website": "https://www.lever.co",
+   "inComposio": true
+  },
+  {
+   "slug": "recruitee",
+   "name": "Recruitee",
+   "category": "HR & Recruiting",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 23,
+   "website": "https://recruitee.com",
+   "inComposio": true
+  },
+  {
+   "slug": "docusign",
+   "name": "DocuSign",
+   "category": "E-signature",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 335,
+   "website": "https://www.docusign.com",
+   "inComposio": true
+  },
+  {
+   "slug": "dropbox_sign",
+   "name": "Dropbox Sign",
+   "category": "E-signature",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "API_KEY",
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 56,
+   "website": "https://sign.dropbox.com",
+   "inComposio": true
+  },
+  {
+   "slug": "shopify",
+   "name": "Shopify",
+   "category": "Commerce",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 315,
+   "website": "https://www.shopify.com",
+   "inComposio": true
+  },
+  {
+   "slug": "gumroad",
+   "name": "Gumroad",
+   "category": "Commerce",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 7,
+   "website": "https://gumroad.com",
+   "inComposio": true
+  },
+  {
+   "slug": "canvas",
+   "name": "Canvas",
+   "category": "Education",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 573,
+   "website": "https://www.instructure.com/canvas",
+   "inComposio": true
+  },
+  {
+   "slug": "google_classroom",
+   "name": "Google Classroom",
+   "category": "Education",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 62,
+   "website": "https://classroom.google.com",
+   "inComposio": true
+  },
+  {
+   "slug": "spotify",
+   "name": "Spotify",
+   "category": "Other",
+   "managedAppAvailable": false,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [],
+   "noAuth": false,
+   "toolsCount": 84,
+   "website": "https://spotify.com",
+   "inComposio": true
+  },
+  {
+   "slug": "typeform",
+   "name": "Typeform",
+   "category": "Other",
+   "managedAppAvailable": true,
+   "authSchemes": [
+    "OAUTH2"
+   ],
+   "guideStatus": "not_generated",
+   "plannedVerified": false,
+   "managedAuthSchemes": [
+    "OAUTH2"
+   ],
+   "noAuth": false,
+   "toolsCount": 35,
+   "website": "https://www.typeform.com",
+   "inComposio": true
+  }
+ ]
+}

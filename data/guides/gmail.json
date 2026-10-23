@@ -1,0 +1,364 @@
+{
+ "app": {
+  "name": "Gmail",
+  "slug": "gmail",
+  "website": "https://mail.google.com",
+  "category": "Email & Calendar"
+ },
+ "composio": {
+  "toolkitExists": true,
+  "toolkitSlug": "gmail",
+  "authSchemes": [
+   "OAUTH2"
+  ],
+  "managedAppAvailable": true
+ },
+ "scenarioByInput": {
+  "read|me": "A_ready_to_use",
+  "read|team": "B_switch_to_own_app",
+  "read|customers": "D_review_required",
+  "write|me": "A_ready_to_use",
+  "write|team": "B_switch_to_own_app",
+  "write|customers": "D_review_required",
+  "both|me": "A_ready_to_use",
+  "both|team": "B_switch_to_own_app",
+  "both|customers": "D_review_required"
+ },
+ "summary": {
+  "setupEffort": "A few hours of hands-on work (estimate, untested)",
+  "waitOfficial": "Brand verification typically 2–3 business days; restricted-scope verification can take several weeks (Google)",
+  "gatekeepers": [
+   "Google",
+   "Customer Workspace admins (for domain-wide installs, only admins can allowlist the app)"
+  ],
+  "nextAction": "Create a separate Google Cloud project for production and enable the Gmail API."
+ },
+ "scopes": [
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.send",
+   "allows": "Send email as the user",
+   "capability": "write",
+   "tier": "sensitive",
+   "triggers": "Google verification (no security assessment)",
+   "evidence": [
+    "e4",
+    "e5"
+   ]
+  },
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.readonly",
+   "allows": "Read messages and settings",
+   "capability": "read",
+   "tier": "restricted",
+   "triggers": "Restricted-scope verification + security assessment if a server can access the data",
+   "evidence": [
+    "e5",
+    "e6",
+    "e10"
+   ]
+  },
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.modify",
+   "allows": "Read, compose, send and modify (not permanent delete)",
+   "capability": "both",
+   "tier": "restricted",
+   "triggers": "Restricted-scope verification + security assessment if a server can access the data",
+   "evidence": [
+    "e5",
+    "e6",
+    "e10"
+   ]
+  },
+  {
+   "scope": "https://mail.google.com/",
+   "allows": "Full mailbox access",
+   "capability": "both",
+   "tier": "restricted",
+   "triggers": "Same as above; broadest option — avoid unless required",
+   "evidence": [
+    "e4",
+    "e6"
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "s1",
+   "phase": "prepare",
+   "title": "Create a separate Google Cloud project for production",
+   "detail": "Google recommends separate projects for testing and production. Use the production project for everything below.",
+   "owner": "you",
+   "link": {
+    "label": "Google Cloud Console",
+    "url": "https://console.cloud.google.com/"
+   },
+   "evidence": [
+    "e5"
+   ]
+  },
+  {
+   "id": "s2",
+   "phase": "register",
+   "title": "Enable the Gmail API in that project",
+   "detail": "APIs & Services → Library → Gmail API → Enable.",
+   "owner": "you",
+   "blocker": {
+    "symptom": "Connections fail with 'Gmail API has not been used in project'",
+    "cause": "The Gmail API is not enabled in the project that owns your OAuth client",
+    "fix": "Enable the Gmail API in the same project, wait a few minutes, retry"
+   },
+   "evidence": [
+    "e2"
+   ]
+  },
+  {
+   "id": "s3",
+   "phase": "register",
+   "title": "Set up branding and verify your domain",
+   "detail": "Add app name, support email, home page and a privacy policy hosted on the same domain as the home page. Verify the domain in Google Search Console.",
+   "owner": "you",
+   "evidence": [
+    "e5"
+   ]
+  },
+  {
+   "id": "s4",
+   "phase": "register",
+   "title": "Create the OAuth client and add Composio's redirect URI",
+   "detail": "Create a Web application OAuth client. Add the redirect URI shown in your Composio dashboard for this auth config.",
+   "owner": "you",
+   "copyValues": [
+    {
+     "label": "Redirect URI",
+     "value": "Copy from Composio dashboard → Auth Configs → your Gmail config"
+    }
+   ],
+   "evidence": [
+    "e9"
+   ]
+  },
+  {
+   "id": "s5",
+   "phase": "register",
+   "title": "Declare the smallest scope that fits what your agent does",
+   "detail": "On the Data Access page, add only the scope for your chosen capability (see Scopes). An agent can pick the scope from the Gmail tools you use, but adding it needs your Google Cloud login.",
+   "owner": "you",
+   "blocker": {
+    "symptom": "Users see 'App is blocked'",
+    "cause": "The app requests a sensitive or restricted scope Google hasn't approved for it",
+    "fix": "Request only declared, approved scopes; complete verification before requesting more"
+   },
+   "evidence": [
+    "e3",
+    "e5",
+    "e7"
+   ]
+  },
+  {
+   "id": "s6",
+   "phase": "connect_composio",
+   "title": "Connect your app to Composio",
+   "detail": "Create a custom auth config with your client ID, secret and scopes, then pass its ID when creating sessions.",
+   "owner": "agent",
+   "copyValues": [
+    {
+     "label": "Python",
+     "value": "auth_config = composio.auth_configs.create(\n    toolkit=\"gmail\",\n    options={\n        \"type\": \"use_custom_auth\",\n        \"auth_scheme\": \"OAUTH2\",\n        \"name\": \"Gmail (own app)\",\n        \"credentials\": {\n            \"client_id\": os.environ[\"GOOGLE_CLIENT_ID\"],\n            \"client_secret\": os.environ[\"GOOGLE_CLIENT_SECRET\"],\n            \"scopes\": \"<scopes from step 5>\",\n        },\n    },\n)"
+    }
+   ],
+   "evidence": [
+    "e7"
+   ]
+  },
+  {
+   "id": "s7",
+   "phase": "connect_composio",
+   "title": "Test it in the Composio Playground",
+   "detail": "Open the auth config → Connect Account → run one Gmail tool. While unverified, expect a warning screen, a user cap and short-lived refresh tokens.",
+   "owner": "you",
+   "link": {
+    "label": "Composio dashboard",
+    "url": "https://dashboard.composio.dev/"
+   },
+   "evidence": [
+    "e11",
+    "e5"
+   ]
+  },
+  {
+   "id": "s8",
+   "phase": "get_approved",
+   "title": "Publish branding (brand verification)",
+   "detail": "Branding page → Verify Branding → Publish. Typically 2–3 business days if branding changed.",
+   "owner": "you",
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "evidence": [
+    "e5"
+   ]
+  },
+  {
+   "id": "s9",
+   "phase": "get_approved",
+   "title": "Request data-access verification",
+   "detail": "In the Verification Center, justify each scope and upload an unlisted demo video showing the consent screen and how your app uses each scope.",
+   "owner": "you",
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "blocker": {
+    "symptom": "Launch date slips",
+    "cause": "The verification wait only starts when you submit",
+    "fix": "Submit as soon as branding and scopes are final, and request only the scopes your agent uses"
+   },
+   "evidence": [
+    "e5"
+   ]
+  },
+  {
+   "id": "s9b",
+   "phase": "get_approved",
+   "title": "Pass the annual security assessment",
+   "detail": "Reading mail uses restricted scopes. Apps that access restricted data from or through a server need a third-party security assessment, repeated at least every 12 months. Send-only agents skip this.",
+   "owner": "you",
+   "appliesTo": {
+    "capability": [
+     "read",
+     "both"
+    ],
+    "audience": [
+     "customers"
+    ]
+   },
+   "blocker": {
+    "symptom": "Approval takes weeks longer than planned",
+    "cause": "Restricted-scope verification and the security assessment can take several weeks",
+    "fix": "Start early, or use send-only (gmail.send) if your agent doesn't need to read mail"
+   },
+   "evidence": [
+    "e5",
+    "e10"
+   ]
+  },
+  {
+   "id": "s10",
+   "phase": "launch",
+   "title": "Move existing users to your app",
+   "detail": "Users who connected through Composio's managed app stay on it until they reconnect. Ask them to reconnect once your app is approved.",
+   "owner": "agent",
+   "evidence": [
+    "e8",
+    "e7"
+   ]
+  }
+ ],
+ "unknowns": [
+  "Whether Composio-hosted token storage counts as server access for Google's assessment rule (inferred yes; confirm with Composio).",
+  "Each Gmail scope's tier must be re-checked against Google's current list at build time.",
+  "Hands-on effort estimate is untested.",
+  "Team audience: 'Internal' user type avoids review only if all users are in your own Workspace org."
+ ],
+ "evidence": [
+  {
+   "id": "e1",
+   "label": "official",
+   "claim": "With Composio-managed apps, users see 'Composio wants to access your account'; production apps should show your own name.",
+   "sourceTitle": "Composio: Managed vs custom auth",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e2",
+   "label": "official",
+   "claim": "A common Gmail error is 'Gmail API has not been used in project' (API not enabled).",
+   "sourceTitle": "Composio: Gmail toolkit FAQ",
+   "url": "https://docs.composio.dev/toolkits/gmail",
+   "checkedAt": "2026-10-22",
+   "note": "FAQ answer text did not load; cause stated from the error wording."
+  },
+  {
+   "id": "e3",
+   "label": "official",
+   "claim": "Google can block sign-in ('App is blocked') when an app requests a sensitive or restricted scope not approved for it.",
+   "sourceTitle": "Composio KB: Google OAuth setup and consent",
+   "url": "https://docs.composio.dev/kb/guide/platform-google-oauth",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e4",
+   "label": "official",
+   "claim": "gmail.send is a sensitive scope and requires Google verification; https://mail.google.com/ is full mailbox access and broader than many customers want.",
+   "sourceTitle": "Composio KB: Gmail",
+   "url": "https://docs.composio.dev/kb/guide/toolkits-gmail",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e5",
+   "label": "official",
+   "claim": "Brand verification typically takes 2–3 business days; restricted-scope verification can take several weeks; apps accessing restricted data from or through a server need a security assessment at least every 12 months; testing apps show a warning screen, have a user cap and limited refresh-token lifetime; internal-only Workspace apps and personal use are exceptions; privacy policy must be on the home page's domain and domains verified.",
+   "sourceTitle": "Google: Restricted scope verification",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e6",
+   "label": "official",
+   "claim": "Google's verification FAQ holds the current list of sensitive and restricted scopes.",
+   "sourceTitle": "Google: OAuth verification FAQ",
+   "url": "https://support.google.com/cloud/answer/9110914",
+   "checkedAt": "2026-10-22",
+   "note": "Re-check each Gmail scope's tier against this list at build time."
+  },
+  {
+   "id": "e7",
+   "label": "official",
+   "claim": "Changing scopes affects new connections only; existing users keep granted scopes until they reconnect. Make sure your OAuth app has the scopes approved in the provider's portal.",
+   "sourceTitle": "Composio: Controlling scopes",
+   "url": "https://docs.composio.dev/docs/authentication/controlling-scopes",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e8",
+   "label": "official",
+   "claim": "Existing connections keep refreshing with their original auth config; full migration means re-authentication (or import where supported).",
+   "sourceTitle": "Composio: White-labeling authentication",
+   "url": "https://docs.composio.dev/docs/authentication/white-labeling-authentication",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e9",
+   "label": "official",
+   "claim": "For OAuth toolkits, the Composio dashboard shows the redirect URI to add in the provider's developer portal.",
+   "sourceTitle": "Composio: Managed vs custom auth",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+   "checkedAt": "2026-10-22"
+  },
+  {
+   "id": "e10",
+   "label": "inferred",
+   "claim": "Because Composio stores and refreshes users' tokens on its servers, a Composio-based Gmail integration likely counts as server access, so the security assessment applies to restricted scopes.",
+   "sourceTitle": "Inference from Composio managed-auth docs + Google rule",
+   "url": "https://docs.composio.dev/toolkits/managed-auth",
+   "checkedAt": "2026-10-22",
+   "note": "Confirm with Composio before presenting as fact."
+  },
+  {
+   "id": "e11",
+   "label": "official",
+   "claim": "Selecting Connect Account on an auth config authenticates the project's Playground user for testing.",
+   "sourceTitle": "Composio KB: Dashboard auth configs",
+   "url": "https://docs.composio.dev/kb/guide/dashboard-auth-configs-navigation",
+   "checkedAt": "2026-10-22"
+  }
+ ],
+ "meta": {
+  "status": "reference",
+  "generatedAt": "2026-10-22",
+  "reviewedBy": "Hand-researched during planning"
+ }
+}
