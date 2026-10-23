@@ -75,3 +75,24 @@ export async function toolkitDoc(slug: string, signal?: AbortSignal): Promise<{ 
     return undefined;
   }
 }
+
+/** Composio's per-app OAuth setup guide (composio.dev/auth/<slug>) as plain text; used when web search is unavailable. */
+export async function authGuide(slug: string, signal?: AbortSignal): Promise<{ url: string; title: string; content: string } | undefined> {
+  const url = `https://composio.dev/auth/${slug}`;
+  try {
+    const res = await fetch(url, { signal });
+    if (!res.ok) return undefined;
+    const text = (await res.text())
+      .replace(/<(script|style|noscript|svg)[\s\S]*?<\/\1>/gi, " ")
+      .replace(/<\/(p|li|h[1-6]|div|section)>/gi, "\n")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n\s*\n+/g, "\n\n")
+      .trim();
+    return text.length > 400 ? { url, title: `Composio: ${slug} OAuth setup guide`, content: text.slice(0, 8000) } : undefined;
+  } catch {
+    return undefined;
+  }
+}

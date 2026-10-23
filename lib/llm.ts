@@ -8,12 +8,41 @@ export type Completion = { content: string; model: string };
 /** The free daily request quota is used up; callers show a friendly message instead of an error page. */
 export class QuotaError extends Error {}
 
-const DEFAULT_FALLBACKS = ["recursive/flint-v1.0:free"];
+// Tried in order after LLM_MODEL when a free model is rate-limited or down (all :free, JSON-capable).
+const DEFAULT_FALLBACKS = ["recursive/flint-v1.0:free", "google/gemma-4-31b-it:free"];
 
+/**
+ * Fallback order: OpenRouter with a list of free models (one request), then, only if GROQ_API_KEY is set,
+ * one retry on Groq's OpenAI-compatible API. Groq is optional; check its current free limits before relying on it.
+ */
 export async function complete(messages: Message[], opts: { json?: boolean; signal?: AbortSignal } = {}): Promise<Completion> {
   const provider = process.env.LLM_PROVIDER || "openrouter";
   if (provider !== "openrouter") throw new Error(`LLM_PROVIDER "${provider}" isn't wired up yet; use "openrouter".`);
-  return openrouter(messages, opts);
+  try {
+    return await openrouter(messages, opts);
+  } catch (error) {
+    if (!secondProviderConfigured() || opts.signal?.aborted) throw error;
+    return groq(messages, opts);
+  }
+}
+
+export const secondProviderConfigured = () => Boolean(process.env.GROQ_API_KEY?.trim());
+
+async function groq(messages: Message[], { json, signal }: { json?: boolean; signal?: AbortSignal }): Promise<Completion> {
+  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    signal,
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model, messages, temperature: 0.2, ...(json ? { response_format: { type: "json_object" } } : {}) }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.error) {
+    const message = String(data.error?.message ?? res.statusText).slice(0, 200);
+    if (res.status === 429) throw new QuotaError("Today's free AI quota is used up on both providers.");
+    throw new Error(`Second provider failed (${res.status}): ${message}`);
+  }
+  return { content: data.choices?.[0]?.message?.content ?? "", model: `groq/${model}` };
 }
 
 async function openrouter(messages: Message[], { json, signal }: { json?: boolean; signal?: AbortSignal }): Promise<Completion> {

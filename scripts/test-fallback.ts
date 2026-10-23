@@ -88,6 +88,9 @@ async function main() {
   assert.equal(calls.length, before, "starter cooldown uses no provider calls");
   remaining = 5;
   response = await POST(request("Airtable", true));
+  assert.equal((await response.json()).runId, undefined, "the last free requests of the day are kept for the demo path");
+  remaining = 20;
+  response = await POST(request("Airtable", true));
   assert.ok((await response.json()).runId, "a starter can be upgraded when allowance returns");
   memory.clear();
   const visitor = visitorId(new Headers());

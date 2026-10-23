@@ -3,7 +3,7 @@ import "server-only";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { OAUTH_SCHEMES, resolveApp } from "@/lib/apps";
-import { findToolkit, toolkitDoc, type ToolkitFacts } from "@/lib/composio";
+import { authGuide, findToolkit, toolkitDoc, type ToolkitFacts } from "@/lib/composio";
 import { complete, parseJsonReply } from "@/lib/llm";
 import type { Plan } from "@/lib/plan-schema";
 import { research, type Source } from "@/lib/research";
@@ -367,12 +367,19 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
   // 3. Retrieval
   emit({ type: "stage", stage: "search", status: "running" });
   let found: Awaited<ReturnType<typeof research>>;
+  let docsOnly = false;
   try {
     found = await research(app.name, { providerDomain: app.domain, signal });
   } catch (error) {
     if (signal.aborted) throw error;
-    emit({ type: "stage", stage: "search", status: "skipped", detail: "Search is unavailable; keeping confirmed facts." });
-    return { plan: starterPlan(query, "Live search is unavailable or its allowance is used up.", facts), sources: [] };
+    // Search fallback: no web search, but Composio's own setup guide for this toolkit is still a real source.
+    const guide = facts.toolkitSlug ? await authGuide(facts.toolkitSlug, signal) : undefined;
+    if (!guide) {
+      emit({ type: "stage", stage: "search", status: "skipped", detail: "Search is unavailable; keeping confirmed facts." });
+      return { plan: starterPlan(query, "Live search is unavailable or its allowance is used up.", facts), sources: [] };
+    }
+    docsOnly = true;
+    found = { sources: [{ ...guide, id: "S1" }], relevantCount: 1, queries: [] };
   }
   const composioDoc = facts.toolkitSlug ? await toolkitDoc(facts.toolkitSlug, signal) : undefined;
   const sources: Source[] = [...found.sources];
@@ -388,7 +395,7 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
     emit({ type: "stage", stage: "check", status: "done", detail: "Nothing to check" });
     return { plan, sources: [] };
   }
-  emit({ type: "stage", stage: "search", status: "done", detail: `${sources.length} sources`, items: [...new Set(sources.map((s) => hostOf(s.url)))] });
+  emit({ type: "stage", stage: "search", status: "done", detail: docsOnly ? `Search unavailable; using ${sources.length} Composio doc${sources.length > 1 ? "s" : ""}` : `${sources.length} sources`, items: [...new Set(sources.map((s) => hostOf(s.url)))] });
 
   // 4. Build (one model call)
   emit({ type: "stage", stage: "build", status: "running", detail: "Writing the plan from the sources (about a minute on free models)" });
@@ -407,6 +414,7 @@ export async function runPipeline(query: string, emit: (e: PipelineEvent) => voi
     return { plan: starterPlan(query, "AI is unavailable or its free allowance is used up.", facts, sources), sources };
   }
   if (!facts.toolkitExists) addToolkitRequest(raw, app);
+  if (docsOnly) raw.unknowns.push("Live web search was unavailable, so this plan uses Composio's docs only; the provider's own review rules and wait times may be missing.");
   emit({ type: "stage", stage: "build", status: "done", detail: `Built with ${first.model}` });
 
   // 5. Check, with one repair call

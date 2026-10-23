@@ -4,7 +4,8 @@ import { OAUTH_SCHEMES, resolveApp } from "@/lib/apps";
 import { findToolkit, type ToolkitFacts } from "@/lib/composio";
 import { generationSetupIssue } from "@/lib/config";
 import { loadGuide } from "@/lib/guides";
-import { remainingQuota } from "@/lib/llm";
+import { remainingQuota, secondProviderConfigured } from "@/lib/llm";
+import { DAILY_RESERVE, isDemoRequest } from "@/lib/quota";
 import { identify, notOAuthPlan, starterPlan } from "@/lib/pipeline";
 import { activeRunFor, createRun, getStoredPlan, markActive, savePlan, takeVisitorSlot, tooManyActive, visitorId } from "@/lib/runs";
 
@@ -43,8 +44,14 @@ export async function POST(request: NextRequest) {
   if (active) return Response.json({ runId: active.runId, slug: app.slug, joined: true, stream: `${base}/api/generate/${active.runId}` });
 
   if (await tooManyActive()) return fallback("Two full plans are being researched right now. Try full research again in a minute.");
+  // Daily guard: keep the last few free requests for the owner's demo; a second provider (if set) lifts the cap.
   const remaining = await remainingQuota();
-  if (remaining !== undefined && remaining < 1) return fallback("Today's free AI allowance is used up. Full research can be retried after it resets.");
+  if (remaining !== undefined && !secondProviderConfigured()) {
+    if (remaining < 1) return fallback("Today's free AI allowance is used up. Full research can be retried after it resets.");
+    if (remaining <= DAILY_RESERVE && !isDemoRequest(request)) {
+      return fallback("Today's free AI allowance is nearly used up, so the last few requests are kept for demos. Try full research tomorrow.");
+    }
+  }
   const visitor = visitorId(request.headers);
   const slot = await takeVisitorSlot(visitor);
   if (!slot.ok) {
