@@ -70,9 +70,9 @@ export default function VerificationPage() {
             ))}
           </ul>
           <p className="mt-2">
-            <Link href="/plan/outlook" className="text-primary hover:underline">Outlook</Link>,{" "}
-            <Link href="/plan/notion" className="text-primary hover:underline">Notion</Link> and{" "}
-            <Link href="/plan/trello" className="text-primary hover:underline">Trello</Link> also have sourced guides.
+            <Link href="/plan/outlook" className="text-primary underline underline-offset-2 hover:no-underline">Outlook</Link>,{" "}
+            <Link href="/plan/notion" className="text-primary underline underline-offset-2 hover:no-underline">Notion</Link> and{" "}
+            <Link href="/plan/trello" className="text-primary underline underline-offset-2 hover:no-underline">Trello</Link> also have sourced guides.
           </p>
         </Block>
 

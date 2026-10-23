@@ -91,7 +91,7 @@ export function Catalog({ statuses, summary, below }: { statuses: Record<string,
               onClick={() => setSetup(f.value)}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background"
             >
-              {f.label} <span className="tabular-nums opacity-70">{counts(f.value)}</span>
+              {f.label} <span className="tabular-nums">{counts(f.value)}</span>
             </button>
           ))}
         </fieldset>
