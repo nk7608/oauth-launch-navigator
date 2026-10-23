@@ -1,0 +1,300 @@
+{
+ "app": {
+  "name": "Outlook",
+  "slug": "outlook",
+  "website": "https://www.microsoft.com/en-in/microsoft-365/outlook/email-and-calendar-software-microsoft-outlook",
+  "category": "Email & Calendar"
+ },
+ "composio": {
+  "toolkitExists": true,
+  "toolkitSlug": "outlook",
+  "authSchemes": [
+   "OAUTH2",
+   "S2S_OAUTH2"
+  ],
+  "managedAppAvailable": true
+ },
+ "scenarioByInput": {
+  "read|me": "A_ready_to_use",
+  "read|team": "B_switch_to_own_app",
+  "read|customers": "D_review_required",
+  "write|me": "A_ready_to_use",
+  "write|team": "B_switch_to_own_app",
+  "write|customers": "D_review_required",
+  "both|me": "A_ready_to_use",
+  "both|team": "B_switch_to_own_app",
+  "both|customers": "D_review_required"
+ },
+ "summary": {
+  "setupEffort": "Register an Entra app, trim delegated permissions, and test tenant consent; hands-on duration Unknown.",
+  "waitOfficial": "Publisher verification can complete in minutes after prerequisites are met; partner-account verification and tenant approval waits are Unknown.",
+  "gatekeepers": [
+   "the customer tenant administrator when tenant policy requires consent"
+  ],
+  "nextAction": "Choose the supported account types for your Entra app registration."
+ },
+ "scopes": [
+  {
+   "scope": "Mail.Read",
+   "allows": "Read the signed-in mailbox.",
+   "capability": "read",
+   "tier": "basic",
+   "triggers": "User consent; tenant policy may require administrator approval.",
+   "evidence": [
+    "o5",
+    "o3"
+   ]
+  },
+  {
+   "scope": "Mail.Send",
+   "allows": "Send mail as the signed-in user.",
+   "capability": "write",
+   "tier": "basic",
+   "triggers": "User consent; tenant policy may require administrator approval.",
+   "evidence": [
+    "o5",
+    "o3"
+   ]
+  },
+  {
+   "scope": "Mail.ReadWrite",
+   "allows": "Create, update or delete mail; also reads mail. Omit for send-only tools.",
+   "capability": "write",
+   "tier": "basic",
+   "triggers": "User consent; tenant policy may require administrator approval.",
+   "evidence": [
+    "o5",
+    "o3"
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "o1",
+   "phase": "prepare",
+   "title": "Choose account types and delegated OAuth",
+   "detail": "Use delegated OAUTH2 for people connecting their own mailboxes; S2S_OAUTH2 is a separate application-permission path outside this guide. Choose single tenant for one organization, multitenant for business customers, and include personal accounts only if needed.",
+   "owner": "you",
+   "evidence": [
+    "o1",
+    "o6"
+   ]
+  },
+  {
+   "id": "o2",
+   "phase": "register",
+   "title": "Register your app in Microsoft Entra",
+   "detail": "Open Entra ID → App registrations → New registration, enter your app name and chosen account types, then save the Application (client) ID.",
+   "owner": "you",
+   "evidence": [
+    "o1"
+   ],
+   "link": {
+    "label": "Microsoft app registration",
+    "url": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app"
+   }
+  },
+  {
+   "id": "o3",
+   "phase": "register",
+   "title": "Add the Web redirect and client credential",
+   "detail": "Under Authentication add a Web redirect matching your Composio auth config. Create a client secret for this supported flow and store its value securely; confirm the production credential approach with Composio because Microsoft recommends stronger alternatives.",
+   "owner": "you",
+   "evidence": [
+    "o6",
+    "o7",
+    "o8",
+    "o11"
+   ],
+   "copyValues": [
+    {
+     "label": "Default Composio redirect URI",
+     "value": "https://backend.composio.dev/api/v1/auth-apps/add"
+    }
+   ]
+  },
+  {
+   "id": "o4",
+   "phase": "register",
+   "title": "Set only the delegated permissions your tools need",
+   "detail": "Under API permissions choose Microsoft Graph delegated permissions: Mail.Read for reading, Mail.Send for sending, and Mail.ReadWrite only for mailbox changes. Keep offline_access for refresh; remove calendar, contacts and chat defaults unless your tools require them.",
+   "owner": "you",
+   "evidence": [
+    "o5",
+    "o6"
+   ]
+  },
+  {
+   "id": "o5",
+   "phase": "connect_composio",
+   "title": "Create a custom Outlook auth config",
+   "detail": "In Composio select Outlook OAUTH2 with your own credentials, enter the client ID/secret and chosen scopes, then use its auth config ID for Outlook sessions. Verify that the redirect exactly matches Entra.",
+   "owner": "you",
+   "evidence": [
+    "o6",
+    "o9"
+   ]
+  },
+  {
+   "id": "o6",
+   "phase": "get_approved",
+   "title": "Complete publisher verification where needed",
+   "detail": "For multitenant business distribution, prepare the verified partner account and publisher domain and complete publisher verification. This improves trust and consent eligibility; it does not replace tenant approval.",
+   "owner": "you",
+   "evidence": [
+    "o2",
+    "o4"
+   ],
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "link": {
+    "label": "Publisher prerequisites",
+    "url": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview"
+   }
+  },
+  {
+   "id": "o7",
+   "phase": "get_approved",
+   "title": "Resolve the customer tenant consent policy",
+   "detail": "Ask the tenant administrator to approve when the consent policy blocks the requested permissions; afterward have the original user start a fresh connection. Test this with each target tenant policy.",
+   "owner": "you",
+   "evidence": [
+    "o3",
+    "o4"
+   ],
+   "blocker": {
+    "symptom": "Needs Admin Approval",
+    "cause": "The tenant requires administrator consent.",
+    "fix": "Have its admin grant consent, then reconnect as the intended mailbox user."
+   }
+  },
+  {
+   "id": "o8",
+   "phase": "launch",
+   "title": "Connect the intended mailbox and test one tool",
+   "detail": "Connect your own mailbox through the Playground or a Connect Link and run a read operation first; verify send or change operations separately on test data. Reconnect users after a scope change.",
+   "owner": "you",
+   "evidence": [
+    "o9",
+    "o10"
+   ],
+   "link": {
+    "label": "Composio Playground",
+    "url": "https://dashboard.composio.dev/"
+   }
+  }
+ ],
+ "unknowns": [
+  "Publisher-account onboarding and each tenant consent turnaround have no established duration.",
+  "This guide covers mail; calculate extra calendar, contacts, chat or shared-mailbox permissions for your actual tools.",
+  "Production certificate/federation support in the Composio client-secret flow needs confirmation.",
+  "This setup was researched, not tested end to end."
+ ],
+ "evidence": [
+  {
+   "id": "o1",
+   "label": "official",
+   "claim": "Register an app in Entra ID > App registrations; choose single tenant, multiple tenants, or organizational plus personal accounts.",
+   "sourceTitle": "Microsoft: Register an application",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app"
+  },
+  {
+   "id": "o2",
+   "label": "official",
+   "claim": "Publisher verification requires a verified Partner Program global account, a work/school app registration and a non-onmicrosoft.com publisher domain; eligible publishers can be verified in minutes. Risk-based consent can block new unverified multitenant apps.",
+   "sourceTitle": "Microsoft: Publisher verification",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview"
+  },
+  {
+   "id": "o3",
+   "label": "official",
+   "claim": "Delegated mailbox consent depends on tenant policy; administrators can restrict user consent, including to verified publishers.",
+   "sourceTitle": "Microsoft: User consent settings",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent"
+  },
+  {
+   "id": "o4",
+   "label": "official",
+   "claim": "For Needs Admin Approval, a tenant admin grants consent in API permissions or Enterprise applications, then the original user reconnects. Publisher verification does not override every tenant policy.",
+   "sourceTitle": "Composio: Outlook consent FAQ",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/toolkits/outlook"
+  },
+  {
+   "id": "o5",
+   "label": "official",
+   "claim": "Delegated Mail.Read reads mail; Mail.ReadWrite modifies mail but does not send; Mail.Send sends. These delegated permissions do not inherently require admin consent, although tenant policies can.",
+   "sourceTitle": "Microsoft Graph: Mail permissions",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/graph/permissions-reference"
+  },
+  {
+   "id": "o6",
+   "label": "official",
+   "claim": "The live Outlook toolkit offers OAUTH2 and S2S_OAUTH2, managed OAUTH2, a client ID/secret custom flow, the Composio redirect URI and required offline_access. Its default scope set spans mail, calendar, contacts and chat.",
+   "sourceTitle": "Composio API: Outlook toolkit",
+   "checkedAt": "2026-10-23",
+   "url": "https://backend.composio.dev/api/v3.1/toolkits/outlook"
+  },
+  {
+   "id": "o7",
+   "label": "official",
+   "claim": "A server application registers its redirect URI using the Web platform in the Authentication settings.",
+   "sourceTitle": "Microsoft: Add a redirect URI",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-redirect-uri"
+  },
+  {
+   "id": "o8",
+   "label": "official",
+   "claim": "A client secret is created under Certificates & secrets; its value is displayed once. Microsoft recommends certificates or federated credentials for production.",
+   "sourceTitle": "Microsoft: Application credentials",
+   "checkedAt": "2026-10-23",
+   "url": "https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-credentials"
+  },
+  {
+   "id": "o9",
+   "label": "official",
+   "claim": "Custom auth configs hold the provider client credentials and are selected through the session authConfigs mapping.",
+   "sourceTitle": "Composio: Custom OAuth apps",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app"
+  },
+  {
+   "id": "o10",
+   "label": "official",
+   "claim": "Scope changes apply to new connections; existing users must reconnect to grant changed scopes.",
+   "sourceTitle": "Composio: Controlling scopes",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/docs/authentication/controlling-scopes"
+  },
+  {
+   "id": "o11",
+   "label": "unknown",
+   "claim": "Certificate or federated-credential support in this Composio custom Outlook flow has not been established; the API currently requests a client secret.",
+   "sourceTitle": "Unverified production credential alternative",
+   "checkedAt": "2026-10-23"
+  }
+ ],
+ "meta": {
+  "status": "generated",
+  "generatedAt": "2026-10-23",
+  "model": "Codex (library research)"
+ },
+ "access": {
+  "gated": false,
+  "reviewForCustomers": true,
+  "note": "Plan for publisher verification and tenant consent checks; a customer tenant may require its administrator to approve even a verified publisher.",
+  "evidence": [
+   "o2",
+   "o3",
+   "o4"
+  ]
+ }
+}
