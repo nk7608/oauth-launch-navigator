@@ -1,0 +1,243 @@
+{
+ "app": {
+  "name": "Notion",
+  "slug": "notion",
+  "website": "https://www.notion.so",
+  "category": "Productivity & Files"
+ },
+ "composio": {
+  "toolkitExists": true,
+  "toolkitSlug": "notion",
+  "authSchemes": [
+   "OAUTH2",
+   "API_KEY"
+  ],
+  "managedAppAvailable": true
+ },
+ "scenarioByInput": {
+  "read|me": "A_ready_to_use",
+  "read|team": "B_switch_to_own_app",
+  "read|customers": "B_switch_to_own_app",
+  "write|me": "A_ready_to_use",
+  "write|team": "B_switch_to_own_app",
+  "write|customers": "B_switch_to_own_app",
+  "both|me": "A_ready_to_use",
+  "both|team": "B_switch_to_own_app",
+  "both|customers": "B_switch_to_own_app"
+ },
+ "summary": {
+  "setupEffort": "Create a public connection, set capabilities and test page access; hands-on duration Unknown.",
+  "waitOfficial": "Unknown: the reviewed docs do not establish a universal public-connection review requirement or turnaround.",
+  "gatekeepers": [
+   "The connecting user, who selects pages; workspace policies may restrict installation"
+  ],
+  "nextAction": "Choose public OAuth for external workspaces, or an internal API-key connection for a single workspace."
+ },
+ "scopes": [],
+ "steps": [
+  {
+   "id": "n1",
+   "phase": "prepare",
+   "title": "Choose the connection type and installation scope",
+   "detail": "Use a public OAuth connection for customers in other workspaces; an internal API-key connection can suit one workspace. Choose Any workspace or Selected workspaces only carefully: changing it later requires a new connection.",
+   "owner": "you",
+   "evidence": [
+    "n1"
+   ]
+  },
+  {
+   "id": "n2",
+   "phase": "register",
+   "title": "Create your public connection",
+   "detail": "In the Developer portal open Build → Public connections and create a connection with its name, development workspace and redirect URI. Read the portal requirements before submitting.",
+   "owner": "you",
+   "evidence": [
+    "n1",
+    "n2"
+   ],
+   "link": {
+    "label": "Notion public connections",
+    "url": "https://developers.notion.com/guides/get-started/public-connections"
+   },
+   "copyValues": [
+    {
+     "label": "Default Composio redirect URI",
+     "value": "https://backend.composio.dev/api/v1/auth-apps/add"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "phase": "register",
+   "title": "Enable Read content for lookup tools",
+   "detail": "Enable Read content, adding Read comments only if the tools need comments. Resource access is granted separately through the page picker.",
+   "owner": "you",
+   "evidence": [
+    "n3",
+    "n2"
+   ],
+   "appliesTo": {
+    "capability": [
+     "read"
+    ]
+   }
+  },
+  {
+   "id": "n4",
+   "phase": "register",
+   "title": "Enable only the content changes your tools need",
+   "detail": "Enable Insert content for creation and Update content for edits; add Read content if the tool also retrieves existing data. Add comment permissions only when required.",
+   "owner": "you",
+   "evidence": [
+    "n3"
+   ],
+   "appliesTo": {
+    "capability": [
+     "write"
+    ]
+   }
+  },
+  {
+   "id": "n5",
+   "phase": "connect_composio",
+   "title": "Create a custom Notion OAuth auth config",
+   "detail": "Get the client ID and secret from Configuration and enter them in a custom Notion OAUTH2 auth config in Composio. Leave OAuth scopes empty and select this auth config for your sessions.",
+   "owner": "you",
+   "evidence": [
+    "n1",
+    "n4",
+    "n5",
+    "n7"
+   ]
+  },
+  {
+   "id": "n6",
+   "phase": "get_approved",
+   "title": "Confirm the portal permits your intended installs",
+   "detail": "Confirm the authorization URL works for the selected installation scope before customer rollout. If the portal asks for submission or review, complete that process; its universal requirement and wait remain Unknown.",
+   "owner": "you",
+   "evidence": [
+    "n2",
+    "n6"
+   ],
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "blocker": {
+    "symptom": "The authorization URL is unavailable.",
+    "cause": "Portal publication requirements may be incomplete; the documentation is inconsistent.",
+    "fix": "Follow the requirements shown in your portal and confirm them with Notion support."
+   }
+  },
+  {
+   "id": "n7",
+   "phase": "launch",
+   "title": "Connect a test user and select a test page",
+   "detail": "Authorize through Composio, select a page in the picker, and test one tool. A missing resource may simply not have been shared: grant access and retry.",
+   "owner": "you",
+   "evidence": [
+    "n2",
+    "n7"
+   ],
+   "blocker": {
+    "symptom": "A page is missing or inaccessible.",
+    "cause": "The user did not grant it, or lacks full access to share it.",
+    "fix": "Use a page the user can fully access and grant it through the picker."
+   }
+  },
+  {
+   "id": "n8",
+   "phase": "launch",
+   "title": "Reuse the connection and configure triggers if needed",
+   "detail": "Reuse one active connection per user and app to avoid replacing refresh tokens through repeated reconnects. If using webhooks with your own app, configure and verify Composio webhook ingress following the toolkit FAQ.",
+   "owner": "you",
+   "evidence": [
+    "n4"
+   ],
+   "link": {
+    "label": "Notion connection and webhook FAQ",
+    "url": "https://docs.composio.dev/toolkits/notion"
+   }
+  }
+ ],
+ "unknowns": [
+  "No OAuth scope strings are used; the empty scope table is intentional.",
+  "The authorization guide mentions review but the public-connection guide does not establish a universal gate or turnaround.",
+  "Workspace-specific installation policies and own-app webhook behavior were not tested.",
+  "This guide has not been reviewed by Nayana or tested end to end."
+ ],
+ "evidence": [
+  {
+   "id": "n1",
+   "label": "official",
+   "claim": "Create a public OAuth connection in the Developer portal and choose its immutable installation scope: Any workspace or Selected workspaces only. Internal API-key connections are limited to one workspace; Marketplace listing is separate.",
+   "sourceTitle": "Notion: Public connections",
+   "checkedAt": "2026-10-23",
+   "url": "https://developers.notion.com/guides/get-started/public-connections"
+  },
+  {
+   "id": "n2",
+   "label": "official",
+   "claim": "The OAuth page picker shows resources the user can fully access; selecting a parent shares its children. The authorization guide also retains a caption mentioning submission for review.",
+   "sourceTitle": "Notion: Authorization",
+   "checkedAt": "2026-10-23",
+   "url": "https://developers.notion.com/guides/get-started/authorization"
+  },
+  {
+   "id": "n3",
+   "label": "official",
+   "claim": "Content capabilities independently permit reading existing content, updating it, or inserting new content; comment capabilities are separate.",
+   "sourceTitle": "Notion: Connection capabilities",
+   "checkedAt": "2026-10-23",
+   "url": "https://developers.notion.com/reference/capabilities"
+  },
+  {
+   "id": "n4",
+   "label": "official",
+   "claim": "Notion uses resource grants instead of OAuth scopes. Composio warns that reconnecting the same user through the same app can invalidate the previous refresh token; custom apps need webhook ingress setup.",
+   "sourceTitle": "Composio: Notion FAQ",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/toolkits/notion"
+  },
+  {
+   "id": "n5",
+   "label": "official",
+   "claim": "The live Notion toolkit supports managed OAUTH2 and API_KEY, requires client ID/secret for custom OAuth and has an empty default scopes field.",
+   "sourceTitle": "Composio API: Notion toolkit",
+   "checkedAt": "2026-10-23",
+   "url": "https://backend.composio.dev/api/v3.1/toolkits/notion"
+  },
+  {
+   "id": "n6",
+   "label": "unknown",
+   "claim": "The public-connection guide describes creation and separate Marketplace listing, while the authorization guide mentions submission for review in a caption. A universal review gate and duration are not established.",
+   "sourceTitle": "Unresolved documentation conflict",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "n7",
+   "label": "official",
+   "claim": "Custom auth configs are selected for sessions using authConfigs; changing apps requires users to authenticate through the chosen app.",
+   "sourceTitle": "Composio: Custom apps",
+   "checkedAt": "2026-10-23",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app"
+  }
+ ],
+ "meta": {
+  "status": "generated",
+  "generatedAt": "2026-10-23",
+  "model": "Codex (library research)"
+ },
+ "access": {
+  "gated": false,
+  "reviewForCustomers": false,
+  "note": "Public connections use selected workspaces or any workspace. Notion documentation conflicts on submission for review; confirm availability in the portal before inviting customers.",
+  "evidence": [
+   "n1",
+   "n2",
+   "n6"
+  ]
+ }
+}
