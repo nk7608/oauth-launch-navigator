@@ -1,5 +1,6 @@
 // One place to look up a plan record by slug: the library first, then live-generated plans.
 import "server-only";
+import { io } from "next/cache";
 import { loadGuide } from "@/lib/guides";
 import { Plan } from "@/lib/plan-schema";
 import { planToMarkdown } from "@/lib/markdown";
@@ -9,6 +10,8 @@ import { getStoredPlan } from "@/lib/runs";
 export async function getPlan(slug: string): Promise<Plan | undefined> {
   const library = loadGuide(slug);
   if (library) return library;
+  // Blob signs requests using the current time; live reads must stay out of the static shell.
+  await io();
   const stored = await getStoredPlan(slug);
   const parsed = stored && Plan.safeParse(stored.plan);
   return parsed?.success ? parsed.data : undefined;
