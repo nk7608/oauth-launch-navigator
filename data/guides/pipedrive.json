@@ -1,0 +1,267 @@
+{
+ "app": {
+  "name": "Pipedrive",
+  "slug": "pipedrive",
+  "website": "https://www.pipedrive.com",
+  "category": "CRM & Sales"
+ },
+ "composio": {
+  "toolkitExists": true,
+  "toolkitSlug": "pipedrive",
+  "authSchemes": [
+   "OAUTH2",
+   "API_KEY"
+  ],
+  "managedAppAvailable": false
+ },
+ "scenarioByInput": {
+  "read|me": "C_own_app_required",
+  "read|team": "C_own_app_required",
+  "read|customers": "C_own_app_required",
+  "write|me": "C_own_app_required",
+  "write|team": "C_own_app_required",
+  "write|customers": "C_own_app_required",
+  "both|me": "C_own_app_required",
+  "both|team": "C_own_app_required",
+  "both|customers": "C_own_app_required"
+ },
+ "access": {
+  "gated": false,
+  "reviewForCustomers": false,
+  "note": "Private apps can be shared with any Pipedrive company by link without review; only a public Marketplace listing is reviewed",
+  "evidence": [
+   "p2",
+   "p4"
+  ]
+ },
+ "summary": {
+  "setupEffort": "About an hour of hands-on work (estimate, untested)",
+  "waitOfficial": "None for a private app. Optional Marketplace listing: reviews may take up to 21 business days (Pipedrive).",
+  "gatekeepers": [],
+  "nextAction": "Log in to a Pipedrive developer sandbox account and open Developer Hub."
+ },
+ "scopes": [
+  {
+   "scope": "deals:read",
+   "allows": "Read deals and related data (fields, notes, files, pipelines, stages)",
+   "capability": "read",
+   "tier": "basic",
+   "triggers": "No review for private apps",
+   "evidence": [
+    "p3"
+   ]
+  },
+  {
+   "scope": "contacts:read",
+   "allows": "Read people and organizations",
+   "capability": "read",
+   "tier": "basic",
+   "triggers": "No review for private apps",
+   "evidence": [
+    "p3"
+   ]
+  },
+  {
+   "scope": "deals:full",
+   "allows": "Create, read, update and delete deals and related data",
+   "capability": "write",
+   "tier": "basic",
+   "triggers": "No review for private apps",
+   "evidence": [
+    "p3"
+   ]
+  },
+  {
+   "scope": "contacts:full",
+   "allows": "Create, read, update and delete people and organizations",
+   "capability": "write",
+   "tier": "basic",
+   "triggers": "No review for private apps",
+   "evidence": [
+    "p3"
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "s1",
+   "phase": "prepare",
+   "title": "Get a Pipedrive developer sandbox account",
+   "detail": "Composio has no managed Pipedrive app, so you need your own even for testing. Developer Hub is only available when you log in to a developer sandbox account.",
+   "owner": "you",
+   "link": {
+    "label": "Pipedrive developers",
+    "url": "https://developers.pipedrive.com/"
+   },
+   "evidence": [
+    "p1",
+    "p6"
+   ]
+  },
+  {
+   "id": "s2",
+   "phase": "register",
+   "title": "Create a private app in Developer Hub",
+   "detail": "Go to Settings → Developer Hub and save a draft private app; saving gives you the client ID and client secret. Private apps skip Marketplace review.",
+   "owner": "you",
+   "evidence": [
+    "p1",
+    "p2"
+   ]
+  },
+  {
+   "id": "s3",
+   "phase": "register",
+   "title": "Set the callback URL to Composio's",
+   "detail": "Pipedrive allows only one callback URL per app, so use Composio's redirect URI. It must work before you can make the app live.",
+   "owner": "you",
+   "copyValues": [
+    {
+     "label": "Callback URL",
+     "value": "https://backend.composio.dev/api/v1/auth-apps/add"
+    }
+   ],
+   "evidence": [
+    "p2",
+    "p6"
+   ]
+  },
+  {
+   "id": "s4",
+   "phase": "register",
+   "title": "Pick scopes for what your agent does",
+   "detail": "Use :read scopes for a read-only agent and :full scopes only where it writes. The base scope is always on, and users accept or reject all requested scopes together.",
+   "owner": "you",
+   "evidence": [
+    "p3"
+   ]
+  },
+  {
+   "id": "s5",
+   "phase": "connect_composio",
+   "title": "Create a Pipedrive auth config with your credentials",
+   "detail": "Create a custom OAuth2 auth config for the pipedrive toolkit with your client ID, secret and scopes, then pass its ID when you create sessions.",
+   "owner": "agent",
+   "copyValues": [
+    {
+     "label": "TypeScript",
+     "value": "const session = await composio.create(\"user_123\", {\n  authConfigs: { pipedrive: \"ac_your_pipedrive_config\" },\n});"
+    }
+   ],
+   "evidence": [
+    "p5"
+   ]
+  },
+  {
+   "id": "s6",
+   "phase": "connect_composio",
+   "title": "Connect from Composio, not from Pipedrive's Install and Test",
+   "detail": "Start the connection from the Composio Playground or a Connect Link and enter your Pipedrive company subdomain when asked. Pipedrive's own Install and Test button skips Composio's auth config.",
+   "owner": "you",
+   "link": {
+    "label": "Composio dashboard",
+    "url": "https://dashboard.composio.dev/"
+   },
+   "blocker": {
+    "symptom": "\"App not found\" when connecting",
+    "cause": "The app isn't live or available to that user's company, or the client ID and secret belong to a different app",
+    "fix": "Check the auth config uses this app's client ID and secret, that the app is live, and that the callback URL matches, then start a fresh connection"
+   },
+   "evidence": [
+    "p5"
+   ]
+  },
+  {
+   "id": "s7",
+   "phase": "launch",
+   "title": "Make the app live and share its install link",
+   "detail": "Choose Change to live in Developer Hub; Pipedrive checks the callback URL, and live apps can't go back to draft. Then share the unlisted installation link from the app's menu with each company that will connect.",
+   "owner": "you",
+   "appliesTo": {
+    "audience": [
+     "team",
+     "customers"
+    ]
+   },
+   "evidence": [
+    "p2"
+   ]
+  },
+  {
+   "id": "s8",
+   "phase": "launch",
+   "title": "Optional: list on the Pipedrive Marketplace",
+   "detail": "Only if you want customers to find you in the Marketplace. Public apps must use OAuth and pass Pipedrive's review, which needs test accounts and a demo video and may take up to 21 business days.",
+   "owner": "you",
+   "appliesTo": {
+    "audience": [
+     "customers"
+    ]
+   },
+   "evidence": [
+    "p4"
+   ]
+  }
+ ],
+ "unknowns": [
+  "Whether a customer's Pipedrive admin must approve installing your private app (not stated in Pipedrive's docs).",
+  "When Composio's managed Pipedrive app will be available; its FAQ says it's still under Pipedrive review.",
+  "Hands-on effort is an estimate and untested."
+ ],
+ "evidence": [
+  {
+   "id": "p1",
+   "label": "official",
+   "claim": "You access Developer Hub by logging in to your developer sandbox account (Settings → Developer Hub); saving a draft app gives you the client ID and client secret.",
+   "sourceTitle": "Pipedrive: Developer Hub",
+   "url": "https://pipedrive.readme.io/docs/developer-hub",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "p2",
+   "label": "official",
+   "claim": "Live private apps can be shared with any company in Pipedrive via a direct, unlisted installation link; draft apps only within the same company. Only one callback URL is allowed per app, and it's validated when you click Change to live; live private apps can't revert to draft.",
+   "sourceTitle": "Pipedrive: Registering a private app",
+   "url": "https://pipedrive.readme.io/docs/marketplace-registering-a-private-app",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "p3",
+   "label": "official",
+   "claim": "The base scope is always enabled; deals:read reads deal data and deals:full creates, updates and deletes it; contacts scopes cover people and organizations; users accept or deny all requested scopes together, so request only what you need.",
+   "sourceTitle": "Pipedrive: Scopes and permission explanations",
+   "url": "https://pipedrive.readme.io/docs/marketplace-scopes-and-permissions-explanations",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "p4",
+   "label": "official",
+   "claim": "Public app reviews may take up to 21 business days; Pipedrive tests install flows and functionality and asks for test accounts and a demo video explaining permissions and scopes; approved apps stay unlisted until you publish.",
+   "sourceTitle": "Pipedrive: App approval process",
+   "url": "https://pipedrive.readme.io/docs/marketplace-app-approval-process",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "p5",
+   "label": "official",
+   "claim": "Create the OAuth app in Pipedrive Developer Hub, then use its client ID and secret in a Pipedrive custom OAuth auth config. Pipedrive shows \"App not found\" when the app isn't approved or available for that user, or the auth config uses another app's credentials; start the connection from Composio and enter the subdomain, not from Pipedrive's Install and Test. The managed Pipedrive app is still under Pipedrive review.",
+   "sourceTitle": "Composio: Pipedrive toolkit FAQ",
+   "url": "https://docs.composio.dev/toolkits/pipedrive",
+   "checkedAt": "2026-10-23"
+  },
+  {
+   "id": "p6",
+   "label": "official",
+   "claim": "Composio's API lists https://backend.composio.dev/api/v1/auth-apps/add as the default OAuth redirect URI for the Pipedrive auth config, and no Composio-managed OAuth scheme for Pipedrive.",
+   "sourceTitle": "Composio API: GET /api/v3.1/toolkits/pipedrive",
+   "url": "https://backend.composio.dev/api/v3.1/toolkits/pipedrive",
+   "checkedAt": "2026-10-23",
+   "note": "Also shown in the Composio dashboard when you create the auth config; use the dashboard value if they differ."
+  }
+ ],
+ "meta": {
+  "status": "generated",
+  "generatedAt": "2026-10-23",
+  "model": "Claude Code (library research)"
+ }
+}
