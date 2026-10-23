@@ -1,5 +1,6 @@
 // POST /api/generate {query} → { runId } to stream from /api/generate/<runId>, or { slug, cached } when a plan exists.
 import type { NextRequest } from "next/server";
+import { generationSetupIssue } from "@/lib/config";
 import { loadGuide } from "@/lib/guides";
 import { remainingQuota } from "@/lib/llm";
 import { identify } from "@/lib/pipeline";
@@ -14,6 +15,9 @@ export async function POST(request: NextRequest) {
   const base = request.nextUrl.origin;
   const done = (slug: string) => Response.json({ slug, cached: true, url: `${base}/plan/${slug}` });
   if (loadGuide(app.slug) || (await getStoredPlan(app.slug))) return done(app.slug);
+
+  const setupIssue = generationSetupIssue();
+  if (setupIssue) return Response.json({ code: "setup", message: setupIssue }, { status: 503 });
 
   // Someone is already generating this app: join that run instead of starting another.
   const active = await activeRunFor(app.slug);

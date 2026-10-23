@@ -1,5 +1,6 @@
 // One entry point for model calls. LLM_PROVIDER picks the backend; only OpenRouter is wired today.
 import "server-only";
+import { freeRequestsRemaining } from "@/lib/quota";
 
 export type Message = { role: "system" | "user" | "assistant"; content: string };
 export type Completion = { content: string; model: string };
@@ -60,9 +61,9 @@ async function openrouter(messages: Message[], { json, signal }: { json?: boolea
 export async function remainingQuota(): Promise<number | undefined> {
   try {
     const res = await fetch("https://openrouter.ai/api/v1/key", { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
+    if (!res.ok) return undefined;
     const d = (await res.json()).data;
-    if (typeof d?.limit_remaining === "number") return d.limit_remaining;
-    return undefined;
+    return freeRequestsRemaining(d);
   } catch {
     return undefined;
   }

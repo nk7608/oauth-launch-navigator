@@ -2,14 +2,19 @@
   "name": "oauth-launch-navigator",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "validate": "tsx scripts/validate.ts",
+    "validate": "node --import tsx scripts/validate.ts",
+    "check-deploy": "node --import tsx scripts/check-deploy.ts",
     "sync-apps": "node scripts/sync-apps.mjs",
-    "check-keys": "bash scripts/check-keys.sh"
+    "check-keys": "bash scripts/check-keys.sh",
+    "smoke": "node --import tsx scripts/smoke.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -28,6 +33,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@next/env": "16.4.2",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

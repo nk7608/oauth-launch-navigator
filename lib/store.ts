@@ -23,6 +23,7 @@ const fileStore: Store = {
     }
   },
   async set(key, value) {
+    if (process.env.VERCEL) throw new Error("Connect a private Vercel Blob store before saving live research.");
     const file = path.join(DATA_DIR, safe(key));
     await mkdir(path.dirname(file), { recursive: true });
     await writeFile(file, JSON.stringify(value, null, 1));
