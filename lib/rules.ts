@@ -177,7 +177,7 @@ const accessNote = (p: Plan, c: { customers: boolean }, fallback = "") =>
 const VERDICT: Record<Scenario, (p: Plan, ctx: { reason?: string; gatekeeper: string; who: string; customers: boolean }) => string> = {
   A_ready_to_use: (p) => `You can start today: Composio's managed ${p.app.name} app covers testing, so you don't need to register anything yet.`,
   B_switch_to_own_app: (p, c) =>
-    `Composio's managed app works for testing, but before ${c.who} ${c.who === "your team" ? "connects" : "connect"} you should register your own ${p.app.name} OAuth app so they see your name.${accessNote(p, c, " No provider review is needed for this setup.")}`,
+    `Composio's managed app works for testing, but before ${c.who} ${c.who === "your team" ? "connects" : "connect"} you should register your own ${p.app.name} OAuth app so they see your name.${accessNote(p, c, " Check the steps for provider or workspace approval requirements.")}`,
   C_own_app_required: (p, c) =>
     `Composio has no managed ${p.app.name} app, so you need to register your own OAuth app before anyone can connect.${accessNote(p, c)}`,
   D_review_required: (p, c) =>
@@ -253,7 +253,7 @@ export function viewPlan(plan: Plan, inputs: Inputs): PlanView {
       }
     : scenario === "H_insufficient_info"
       ? { none: "Unknown" }
-      : { none: scenario === "A_ready_to_use" ? "None. Start now." : "No provider review for this setup." };
+      : { none: scenario === "A_ready_to_use" ? "None. Start now." : "No provider review wait established for this setup." };
 
   const effort =
     scenario === "A_ready_to_use"

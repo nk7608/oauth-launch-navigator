@@ -38,7 +38,7 @@ const SCENARIO_TONE: Record<Scenario, string> = {
 };
 
 const STATUS_TEXT: Record<Plan["meta"]["status"], string> = {
-  reference: "Researched and reviewed by hand",
+  reference: "Reference guide; owner review pending",
   verified: "Reviewed by a person",
   generated: "Researched by an agent, not yet reviewed",
   partial: "Partly researched: some parts couldn't be verified",
@@ -108,7 +108,7 @@ function PlanLayout({ plan, inputs, onChange }: { plan: Plan; inputs: Inputs; on
           >
             <FileTextIcon className="size-3.5" aria-hidden /> JSON for agents
           </a>
-          <p className="pt-2 text-xs text-muted-foreground">Anyone with the link can open this plan. Plans aren&apos;t listed or indexed anywhere.</p>
+          <p className="pt-2 text-xs text-muted-foreground">Anyone with the link can open this plan. Live plans are unlisted but public.</p>
         </div>
       </aside>
 

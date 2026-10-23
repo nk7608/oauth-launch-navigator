@@ -18,7 +18,7 @@ const SETUP_FILTERS: { value: SetupFilter; label: string }[] = [
 ];
 
 const GUIDE_LABEL: Record<GuideStatus, string> = {
-  reference: "Reviewed guide",
+  reference: "Reference guide",
   verified: "Reviewed guide",
   generated: "Guide ready",
   partial: "Partial guide",

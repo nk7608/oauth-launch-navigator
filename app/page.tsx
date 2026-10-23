@@ -12,7 +12,7 @@ export default function Home() {
         the wait, who has to sign off, and what an agent can do for you.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        {apps.length} apps in the library. Any other app can be researched live.
+        {apps.length} apps in the catalog · {Object.keys(statuses).length} guides ready. Other apps can be researched live.
       </p>
       <div className="mt-10">
         <Catalog statuses={statuses} />

@@ -31,7 +31,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/" className="font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4">
               OAuth Launch Navigator
             </Link>
-            <span className="hidden text-sm text-muted-foreground sm:inline">For agents built on Composio</span>
+            <Link href="/verification" className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-4">
+              Verification
+            </Link>
           </div>
         </header>
         <main className="flex-1">{children}</main>
