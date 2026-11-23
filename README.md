@@ -116,10 +116,6 @@ npm install
 npm run dev
 ```
 
-Keys stay in `.env.local` (ignored by git) or your hosting provider's settings. Useful checks:
-`npm run validate` (every guide), `npm run test:fallback` (outages and quota limits, no credits used).
-To deploy your own copy, see [DEPLOYMENT.md](DEPLOYMENT.md).
-
 ## 10. Key decisions
 
 - **Start from what the agent does, not just the app name.** Scopes decide the review, so "read" and "send"
